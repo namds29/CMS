@@ -11,7 +11,7 @@ const Header = ({handleMenuToggle}: any) => {
     <>
       <header className={styles['app-bar']}>
           <div className='flex items-center'>
-            <button  color="inherit" aria-label="menu" onClick={handleMenuToggle}>
+            <button className='bg-transparent border-none'  color="inherit" aria-label="menu" onClick={handleMenuToggle}>
             <AlignLeftOutlined />
             </button>
             <span  className={styles.title}>

@@ -3,11 +3,13 @@ import jsonData from "../../mock/data-table-sale.json";
 import ModalForSale from "../modal/modal-for-sale";
 const TableForSale = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  
   const data = jsonData;
 
   const showModal = (item: any) => {
     setIsModalOpen(true);
+    console.log(item);
+    
   };
 
   const handleOk = () => {
@@ -61,7 +63,7 @@ const TableForSale = () => {
           {data.map((item, index) => (
             <tr
               key={index}
-              className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+              className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border-bottom-solid"
             >
               <td className="px-6 py-4">{item.nguon}</td>
               <td className="px-6 py-4">{item.status}</td>
@@ -96,7 +98,7 @@ const TableForSale = () => {
                   </div> */}
                   <div className="px-6 py-4 text-right font-bold">
                     <button
-                      className="text-blue-600 hover:underline"
+                      className="border-none bg-transparent text-blue-600 hover:underline cursor-pointer"
                       onClick={() => showModal(item)}
                     >
                       Chăm sóc
@@ -106,7 +108,10 @@ const TableForSale = () => {
               </td>
             </tr>
           ))}
-          {isModalOpen && (
+        
+        </tbody>
+      </table>
+      {isModalOpen && (
             <ModalForSale
               isModalOpen={isModalOpen}
               showModal={showModal}
@@ -114,9 +119,8 @@ const TableForSale = () => {
               handleCancel={handleCancel}
             />
           )}
-        </tbody>
-      </table>
     </div>
+    
   );
 };
 

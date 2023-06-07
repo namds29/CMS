@@ -29,6 +29,7 @@ dl,
 dd {
   margin: 0;
 }
+
 /* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
 ul[role='list'],
 ol[role='list'] {
@@ -63,8 +64,13 @@ picture {
 input,
 button,
 textarea,
-select, a {
+select,
+a {
   font: inherit;
+}
+
+.border-bottom-solid:not(:last-child) {
+  border-bottom: 1px solid #e1e1e1;
 }
 
 /* Remove all animations, transitions and smooth scroll for people that prefer not to see them */
