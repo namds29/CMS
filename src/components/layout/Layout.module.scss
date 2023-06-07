@@ -1,0 +1,12 @@
+.container {
+    display: flex;
+    height: calc(100vh - 64px);
+
+    .main-content {
+        position: relative;
+        width: 100%;
+        background-color: rgb(238, 242, 246);
+        border-radius: 20px;
+        padding: 1.3rem 1.5rem;
+    }
+}
