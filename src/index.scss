@@ -14,6 +14,7 @@
 *::before,
 *::after {
   box-sizing: border-box;
+  font-family: 'Roboto';
 }
 
 /* Remove default margin */
@@ -45,7 +46,6 @@ html:focus-within {
 body {
   text-rendering: optimizeSpeed;
   line-height: 1.5;
-  font-family: 'Roboto';
 }
 
 /* A elements that don't have a class get default styles */
@@ -69,10 +69,29 @@ a {
   font: inherit;
 }
 
-.border-bottom-solid:not(:last-child) {
+.border-bottom-solid {
   border-bottom: 1px solid #e1e1e1;
 }
+.border-grey{
+  border: 1px solid lightgrey;
+}
+::-webkit-scrollbar {
+  width: 8px;
+ 
+}
 
+::-webkit-scrollbar-track {
+  background-color: #f2f2f2;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #aca9a98e;
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #555555;
+}
 /* Remove all animations, transitions and smooth scroll for people that prefer not to see them */
 @media (prefers-reduced-motion: reduce) {
   html:focus-within {

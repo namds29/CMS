@@ -8,8 +8,6 @@ const TableForSale = () => {
 
   const showModal = (item: any) => {
     setIsModalOpen(true);
-    console.log(item);
-    
   };
 
   const handleOk = () => {
@@ -96,7 +94,7 @@ const TableForSale = () => {
                       Edit
                     </button>
                   </div> */}
-                  <div className="px-6 py-4 text-right font-bold">
+                  <div className="text-center w-full font-bold">
                     <button
                       className="border-none bg-transparent text-blue-600 hover:underline cursor-pointer"
                       onClick={() => showModal(item)}

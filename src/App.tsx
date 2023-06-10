@@ -7,17 +7,20 @@ import LoginForm from "./pages/login/login-form";
 import Layout from "./components/layout/Layout";
 import Dashboard from "./pages/dashboard/Dashboard";
 import SalePage from "./pages/sale";
+import { AuthProvider } from "./shared/contexts/authContext";
 
 function App() {
   return (
     <>
-      <Routes>
-        <Route path="/" element={<LoginForm />} />
-        <Route element={<Layout children={<Outlet />} />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/sale" element={<SalePage />} />
-        </Route>
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<LoginForm />} />
+          <Route element={<Layout children={<Outlet />} />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/sale" element={<SalePage />} />
+          </Route>
+        </Routes>
+      </AuthProvider>
     </>
   );
 }
