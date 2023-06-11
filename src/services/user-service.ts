@@ -6,7 +6,6 @@ const config_header = {
 };
 
 async function login(username: string, password: string) {
-
   let config = {
     method: "post",
     maxBodyLength: Infinity,

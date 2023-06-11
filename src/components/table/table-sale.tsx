@@ -1,12 +1,28 @@
 import { useState } from "react";
 import jsonData from "../../mock/data-table-sale.json";
 import ModalForSale from "../modal/modal-for-sale";
-const TableForSale = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  
-  const data = jsonData;
+import useFetchDataClient from "../../shared/hooks/useFetchDataClient";
+import { IClient } from "../../shared/constants/sale-types";
 
-  const showModal = (item: any) => {
+const columnNames = [
+  "Nguồn",
+  "Tình trạng",
+  "Ngày tiếp nhận",
+  "Họ và tên",
+  "SĐT",
+  "Địa chỉ",
+  "Năm sinh",
+  "Lần chăm sóc gần nhất",
+  "Kết bạn Zalo",
+  "Đưa vào nhóm kín",
+];
+const TableForSale = () => {
+  const { data } = useFetchDataClient();
+  // console.log(data);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModal = () => {
     setIsModalOpen(true);
   };
 
@@ -22,103 +38,81 @@ const TableForSale = () => {
       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 whitespace-nowrap border-collapse">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
-            <th scope="col" className="px-6 py-3">
-              Nguồn
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Tình trạng
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Ngày tiếp nhận
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Họ và tên
-            </th>
-            <th scope="col" className="px-6 py-3">
-              SĐT
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Địa chỉ
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Năm sinh
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Lần chăm sóc gần nhất
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Kết bạn Zalo
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Đưa vào nhóm kín
-            </th>
+            {columnNames.map((columnName, index) => (
+              <th key={index} scope="col" className="px-6 py-3">
+                {columnName}
+              </th>
+            ))}
             <th scope="col" className="px-6 py-3 sticky right-0 bg-gray-100">
               <span className="sr-only">Edit</span>
             </th>
           </tr>
         </thead>
         <tbody>
-          {data.map((item, index) => (
-            <tr
-              key={index}
-              className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border-bottom-solid"
-            >
-              <td className="px-6 py-4">{item.nguon}</td>
-              <td className="px-6 py-4">{item.status}</td>
-              <td className="px-6 py-4">{item.takeDate}</td>
-              <td className="px-6 py-4">{item.fullname}</td>
-              <td className="px-6 py-4">{item.phone}</td>
-              <td className="px-6 py-4">{item.address}</td>
-              <td className="px-6 py-4">{item.dob}</td>
-              <td className="px-6 py-4">{item.takeCare}</td>
-              <td className="px-6 py-4">
-                <input
-                  type="checkbox"
-                  name=""
-                  id=""
-                  defaultChecked={item.addZalo}
-                />
-              </td>
-              <td className="px-6 py-4">
-                <input
-                  type="checkbox"
-                  name=""
-                  id=""
-                  defaultChecked={item.addGroup}
-                />
-              </td>
-              <td className="sticky right-0 bg-gray-100">
-                <div className="flex">
-                  {/* <div className="px-6 py-4 text-right">
+          {data &&
+            data.map((item: IClient, index: number) => (
+              <tr
+                key={index}
+                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border-bottom-solid"
+              >
+                <td className="px-6 py-4">{item.referSource}</td>
+                <td className="px-6 py-4">{item.status}</td>
+                <td className="px-6 py-4">{item.createdAt}</td>
+                <td className="px-6 py-4">{item.name}</td>
+                <td className="px-6 py-4">{item.phone}</td>
+                <td className="px-6 py-4">{item.address}</td>
+                <td className="px-6 py-4">
+                  {item.dateOfBirth}
+                </td>
+                <td className="px-6 py-4">
+                  {item.lastCareTime}
+                </td>
+                <td className="px-6 py-4">
+                  <input
+                    type="checkbox"
+                    name=""
+                    id=""
+                    defaultChecked={item.addZaloFriend}
+                  />
+                </td>
+                <td className="px-6 py-4">
+                  <input
+                    type="checkbox"
+                    name=""
+                    id=""
+                    defaultChecked={item.moveToPrivateGroup}
+                  />
+                </td>
+                <td className="sticky right-0 bg-gray-100">
+                  <div className="flex">
+                    {/* <div className="px-6 py-4 text-right">
                     <button className="text-blue-600 hover:underline">
                       Edit
                     </button>
                   </div> */}
-                  <div className="text-center w-full font-bold">
-                    <button
-                      className="border-none bg-transparent text-blue-600 hover:underline cursor-pointer"
-                      onClick={() => showModal(item)}
-                    >
-                      Chăm sóc
-                    </button>
+                    <div className="text-center w-full font-bold">
+                      <button
+                        className="border-none bg-transparent text-blue-600 hover:underline cursor-pointer"
+                        onClick={() => showModal()}
+                      >
+                        Chăm sóc
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </td>
-            </tr>
-          ))}
-        
+                </td>
+              </tr>
+            ))}
         </tbody>
       </table>
       {isModalOpen && (
-            <ModalForSale
-              isModalOpen={isModalOpen}
-              showModal={showModal}
-              handleOk={handleOk}
-              handleCancel={handleCancel}
-            />
-          )}
+        <ModalForSale
+          isModalOpen={isModalOpen}
+          showModal={showModal}
+          handleOk={handleOk}
+          handleCancel={handleCancel}
+        />
+      )}
     </div>
-    
   );
 };
 

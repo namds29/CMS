@@ -1,8 +1,7 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 
 import styles from './Sidebar.module.scss';
-import { FundOutlined, PieChartOutlined } from '@ant-design/icons';
+import {  PieChartOutlined } from '@ant-design/icons';
 
 const Sidebar = ({ menuOpen }: any) => {
     const menuItem = [

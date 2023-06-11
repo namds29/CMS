@@ -1,8 +1,7 @@
-import { Dispatch, FC, useState } from "react";
-import { Button, Dropdown, MenuProps, Modal, Space } from "antd";
+import { FC, useState } from "react";
+import { Modal } from "antd";
 import type { CollapseProps } from "antd";
 import { Collapse } from "antd";
-import { DownOutlined } from "@ant-design/icons";
 
 interface modalForSaleProps {
   isModalOpen: boolean;

@@ -1,30 +1,39 @@
 
-export interface Care {
+export interface ICare {
     id: number;
     clientStatus: number;
     summary: string;
-    nextCallSchedule?: Date;
-    createdAt: Date;
-    client: Client;
+    nextCallSchedule?: string;
+    createdAt: string;
+    client: IClient;
     note?: string;
   }
   
-export interface HeathProgress {
+export interface IHeathProgress {
     id: number;
     note: string;
-    createdAt: Date;
+    createdAt: string;
 }
-export interface Client {
+export interface IClient {
     id: number;
     name: string;
     phone: string;
     address?: string;
-    dateOfBirth?: Date;
+    dateOfBirth?: string;
     type: number;
-    care?: Care[];
-    createdAt: Date;
-    heathProgress?: HeathProgress[];
+    care?: ICare[];
+    lastCareTime?: string;
+    status: number;
+    createdAt: string;
+    heathProgress?: IHeathProgress[];
     addZaloFriend: boolean;
     moveToPrivateGroup: boolean;
     referSource: number;
+}
+export interface ICreateFormClient {
+    name: string,
+    phone: number,
+    address: string,
+    dateOfBirth: string,
+    referSource: number
 }

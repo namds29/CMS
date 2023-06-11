@@ -1,5 +1,4 @@
 import { FC } from "react";
-import TableForSale from "../../components/table/table-sale";
 import FetchDataTable from "./feature/fetch-data-table";
 import CreateFormClient from "./feature/create-form-client";
 

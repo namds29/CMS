@@ -1,5 +1,4 @@
 import styles from "./Header.module.scss";
-import Sidebar from "../sidebar/Sidebar";
 import { AlignLeftOutlined } from "@ant-design/icons";
 import userService from "../../../services/user-service";
 import { useNavigate } from "react-router-dom";

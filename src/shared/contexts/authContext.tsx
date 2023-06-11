@@ -1,4 +1,4 @@
-import { FC, createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import userService from "../../services/user-service";
@@ -22,6 +22,7 @@ export const AuthProvider = ({ children }: any) => {
     if (userService.isLoggedIn()) {
       try {
         const decode_token = jwtDecode<Decode_Token>(token);
+        setToken(decode_token.loginName)
       } catch (error) {
         navigate("/");
         localStorage.removeItem("token");

@@ -76,8 +76,8 @@ a {
   border: 1px solid lightgrey;
 }
 ::-webkit-scrollbar {
-  width: 8px;
- 
+  width: 6px;
+ height: 10px;
 }
 
 ::-webkit-scrollbar-track {
@@ -86,7 +86,7 @@ a {
 
 ::-webkit-scrollbar-thumb {
   background-color: #aca9a98e;
-  border-radius: 8px;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {

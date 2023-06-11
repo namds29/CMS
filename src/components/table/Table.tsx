@@ -1,6 +1,5 @@
-import jsonData from '../../mock/data-table-sale.json';
 const Table = () => {
-  const data = jsonData
+  // const data = jsonData
 
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full">

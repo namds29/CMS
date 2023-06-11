@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import styles from "./login-form.module.scss";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -13,9 +13,9 @@ const LoginForm = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    // formState: { errors },
   } = useForm<User>();
-  const [errorMsg, setErrorMsg] = useState(false);
+  // const [errorMsg, setErrorMsg] = useState(false);
   const navigate = useNavigate();
   const onSubmit: SubmitHandler<User> = async ({
     username,
@@ -29,21 +29,18 @@ const LoginForm = () => {
       }
     } catch (error: any) {
       if (error.response.status === 401) {
-        setErrorMsg(true);
+        // setErrorMsg(true);
       }
       console.log(error);
     }
   };
-  // const onSubmit: SubmitHandler<User> = async ()=>{
-  //   // navigate("/sale");
-  // }
+
   useEffect(() => {
-    // navigate("/dashboard");
   }, [navigate]);
   return (
     <div className={styles.container}>
       <h2>Login</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
         <div className={styles.formGroup}>
           <label htmlFor="username">Username</label>
           <input
