@@ -1,8 +1,7 @@
 import { useState } from "react";
-import jsonData from "../../mock/data-table-sale.json";
 import ModalForSale from "../modal/modal-for-sale";
 import useFetchDataClient from "../../shared/hooks/useFetchDataClient";
-import { IClient } from "../../shared/constants/sale-types";
+import { IClient } from "../../shared/interfaces/sale-types";
 
 const columnNames = [
   "Nguồn",
@@ -34,7 +33,7 @@ const TableForSale = () => {
     setIsModalOpen(false);
   };
   return (
-    <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
+    <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full max-h-[calc(100vh-10rem)]">
       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 whitespace-nowrap border-collapse">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>

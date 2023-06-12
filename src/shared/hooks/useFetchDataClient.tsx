@@ -1,6 +1,6 @@
-import { IClient } from "../constants/sale-types";
+import { IClient } from "../interfaces/sale-types";
 import saleService from "../../services/sale-service";
-import { ReferSource } from "../constants/refer-source-types";
+import { ReferSource } from "../interfaces/refer-source-types";
 import { useQuery } from "@tanstack/react-query";
 
 const parseDate = (params: string) => {
@@ -9,7 +9,7 @@ const parseDate = (params: string) => {
     : "";
 };
 const fetchClients = async () => {
-  const resClient = await saleService.fetchClient(1, 10);
+  const resClient = await saleService.fetchClient(1, 20);
   console.log(resClient);
   
   const resReferSource = await saleService.fetchReferSource();

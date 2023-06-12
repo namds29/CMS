@@ -1,6 +1,6 @@
 import axios from "axios";
 import QueryString from "qs";
-import {  ICreateFormClient } from "../shared/constants/sale-types";
+import {  ICreateFormClient } from "../shared/interfaces/sale-types";
 
 
 

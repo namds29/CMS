@@ -3,7 +3,7 @@ import { FC, useState } from "react";
 import saleService from "../../../services/sale-service";
 import { useForm } from "react-hook-form";
 import useFetchReferSource from "../../../shared/hooks/useFetchReferSource";
-import { ReferSource } from "../../../shared/constants/refer-source-types";
+import { ReferSource } from "../../../shared/interfaces/refer-source-types";
 
 interface FormClientProps {}
 
@@ -11,7 +11,7 @@ const CreateFormClient: FC<FormClientProps> = ({}) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    // formState: { errors },
   } = useForm();
 
   const { referSources } = useFetchReferSource();
@@ -39,9 +39,9 @@ const CreateFormClient: FC<FormClientProps> = ({}) => {
           setIsModalOpen(false);
         },
       });
-    }else{
+    } else {
       Modal.error({
-        content: 'Thêm khách hàng thất bại!',
+        content: "Thêm khách hàng thất bại!",
       });
     }
   };
@@ -129,15 +129,15 @@ const CreateFormClient: FC<FormClientProps> = ({}) => {
               <button
                 type="button"
                 onClick={handleCancel}
-                className="ml-2 text-gray-500 border-none mr-4 px-4 py-1 rounded cursor-pointer"
+                className="mr-4 border-none px-4 py-1 rounded cursor-pointer hover:bg-gray-200"
               >
-                Cancel
+                Đóng
               </button>
               <button
                 type="submit"
                 className="bg-blue-500 text-white px-4 py-1 rounded-md border-none cursor-pointer hover:bg-blue-400 "
               >
-                Submit
+                Tạo
               </button>
             </div>
           </form>

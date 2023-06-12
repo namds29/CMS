@@ -187,9 +187,8 @@ const ModalForSale: FC<modalForSaleProps> = ({
       ),
     },
   ];
-  const onChange = (key: string | string[]) => {
-    console.log(key);
-  };
+  // const onChange = (key: string | string[]) => {
+  // };
   return (
     <>
       <Modal
@@ -197,13 +196,23 @@ const ModalForSale: FC<modalForSaleProps> = ({
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
+        footer={[
+          <button
+            type="button"
+            onClick={handleCancel}
+            key={'btn-close'}
+            className="mr-4 border-none px-4 py-1 rounded cursor-pointer hover:bg-gray-200"
+          >
+            Đóng
+          </button>,
+        ]}
       >
         <Collapse
           className="max-h-[calc(85vh-180px)] overflow-y-auto"
           overflow-y-auto
           items={items}
           defaultActiveKey={["1"]}
-          onChange={onChange}
+          // onChange={onChange}
         />
       </Modal>
     </>
