@@ -1,13 +1,25 @@
 import { Button, Modal } from "antd";
-import { FC, useState } from "react";
+import { FC, useContext, useEffect } from "react";
 import saleService from "../../../services/sale-service";
 import { useForm } from "react-hook-form";
 import useFetchReferSource from "../../../shared/hooks/useFetchReferSource";
 import { ReferSource } from "../../../shared/interfaces/refer-source-types";
+import { SaleContext } from "../context/sale-context";
+import { AuthContext } from "../../../shared/contexts/authContext";
 
-interface FormClientProps {}
+interface FormClientProps {
+  isModalOpen: boolean;
+  setIsModalOpen: any;
+  showModal: () => void;
+  handleCancel: () => void;
+}
 
-const CreateFormClient: FC<FormClientProps> = ({}) => {
+const CreateFormClient: FC<FormClientProps> = ({
+  isModalOpen,
+  setIsModalOpen,
+  showModal,
+  handleCancel,
+}) => {
   const {
     register,
     handleSubmit,
@@ -15,14 +27,10 @@ const CreateFormClient: FC<FormClientProps> = ({}) => {
   } = useForm();
 
   const { referSources } = useFetchReferSource();
+  const { isSuccess, setIsSuccess } = useContext(SaleContext);
+  const {userID} = useContext(AuthContext);
   console.log(referSources);
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
+  
   const handleOk = async (data: any) => {
     const form = {
       name: data.name,
@@ -30,13 +38,17 @@ const CreateFormClient: FC<FormClientProps> = ({}) => {
       address: data.address,
       dateOfBirth: data.dateOfBirth,
       referSource: Number(data.referSource),
+      clientHeathStatus: data.clientHeathStatus,
+      userID: userID,
     };
+    console.log(form);
     const res = await saleService.createClient(form);
     if (res.status === 200) {
       Modal.success({
         content: "Thêm khách hàng thành công!",
         onOk() {
           setIsModalOpen(false);
+          setIsSuccess(true);
         },
       });
     } else {
@@ -45,17 +57,11 @@ const CreateFormClient: FC<FormClientProps> = ({}) => {
       });
     }
   };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+  useEffect(() => {
+    return () => setIsSuccess(false);
+  }, []);
   return (
     <>
-      <div className="text-right mb-4">
-        <Button type="primary" onClick={showModal}>
-          Tạo khách hàng
-        </Button>
-      </div>
       {isModalOpen && (
         <Modal
           title="FORM TẠO MỚI KHÁCH HÀNG"
@@ -108,7 +114,7 @@ const CreateFormClient: FC<FormClientProps> = ({}) => {
               </p>
               <select
                 className="w-[calc(100%-90px)] max-w-full h-8 px-2 text-sm text-gray-900 border-grey rounded bg-gray-50 "
-                {...register("referSource", { required: true })}
+                {...register("referSource")}  value={1}
               >
                 {referSources &&
                   referSources.map((item: ReferSource, index: number) => (
@@ -123,6 +129,7 @@ const CreateFormClient: FC<FormClientProps> = ({}) => {
               <textarea
                 className="w-full max-w-full border-grey rounded p-2 h-24"
                 placeholder="Ghi chú..."
+                {...register("clientHeathStatus")}
               ></textarea>
             </div>
             <div className="flex justify-end mt-4">

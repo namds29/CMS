@@ -1,28 +1,32 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, useMemo, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import userService from "../../services/user-service";
 import jwtDecode from "jwt-decode";
 
 type Decode_Token = {
+  id: number,
   loginName: string;
   role: number;
 };
 
 export const AuthContext = createContext({
   token: "",
+  userID: 0
 });
 
 export const AuthProvider = ({ children }: any) => {
   const [token, setToken] = useState<string>("");
+  const [userID, setUserID] = useState<number>(0)
   const navigate = useNavigate();
   const location = useLocation();
-  const checkLogin = () => {
-    const token = JSON.stringify(localStorage.getItem("token") ?? "");
+  const checkLogin = useCallback(() => {
+    const storedToken = localStorage.getItem("token") ?? "";
     if (userService.isLoggedIn()) {
       try {
-        const decode_token = jwtDecode<Decode_Token>(token);
-        setToken(decode_token.loginName)
+        const decode_token = jwtDecode<Decode_Token>(storedToken);
+        setUserID(decode_token.id);
+        setToken(decode_token.loginName);
       } catch (error) {
         navigate("/");
         localStorage.removeItem("token");
@@ -30,12 +34,13 @@ export const AuthProvider = ({ children }: any) => {
     } else {
       navigate("/");
     }
-  };
+  }, [navigate]);
+
   useEffect(() => {
     checkLogin();
-  }, [location.pathname]);
+  }, [checkLogin, location.pathname]);
 
   return (
-    <AuthContext.Provider value={{ token }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ token, userID }}>{children}</AuthContext.Provider>
   );
 };

@@ -1,3 +1,21 @@
+export interface IClient {
+    id: number;
+    createdAt: string;
+    updatedAt: string;
+    name: string;
+    phone: string;
+    address?: string;
+    dateOfBirth?: string;
+    status: string;
+    intakeCenter?: number;
+    lastCareTime?: string;
+    userID?: number;
+    addZaloFriend: boolean;
+    moveToPrivateGroup: boolean;
+    referSource: number;
+    vistingDate : string,
+    courseID: string
+}
 
 export interface ICare {
     id: number;
@@ -7,33 +25,32 @@ export interface ICare {
     createdAt: string;
     client: IClient;
     note?: string;
-  }
-  
-export interface IHeathProgress {
-    id: number;
-    note: string;
-    createdAt: string;
 }
-export interface IClient {
+
+
+export interface ClientHeathHistory {
     id: number;
-    name: string;
-    phone: string;
-    address?: string;
-    dateOfBirth?: string;
-    type: number;
-    care?: ICare[];
-    lastCareTime?: string;
-    status: number;
-    createdAt: string;
-    heathProgress?: IHeathProgress[];
-    addZaloFriend: boolean;
-    moveToPrivateGroup: boolean;
-    referSource: number;
+    status: string;
+    clientID?: number;
+    createdAt: Date;
+    updatedAt: Date;
+    userID?: number;
 }
+
 export interface ICreateFormClient {
     name: string,
     phone: number,
     address: string,
     dateOfBirth: string,
     referSource: number
+    clientHeathStatus: string,
+    userID: number
+}
+
+export interface ResponseStatus {
+    id: number;
+    name: string;
+    createdAt: Date;
+    updatedAt: Date;
+    userID?: number;
 }

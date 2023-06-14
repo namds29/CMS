@@ -1,9 +1,16 @@
-import { FC, useState } from "react";
+import { FC, useState, useEffect, useContext } from "react";
 import { Modal } from "antd";
 import type { CollapseProps } from "antd";
 import { Collapse } from "antd";
+import { IClient, ResponseStatus } from "../../shared/interfaces/sale-types";
+import saleService from "../../services/sale-service";
+import { AuthContext } from "../../shared/contexts/authContext";
+import { SaleContext } from "../../pages/sale/context/sale-context";
+import utilsService from "../../services/utils-service";
+import { Course, Session } from "../../shared/interfaces/utils-types";
 
 interface modalForSaleProps {
+  clientInfor: IClient | undefined;
   isModalOpen: boolean;
   setIsModalOpen?: any;
   showModal: (item: any) => void;
@@ -28,15 +35,83 @@ const takeCareHistory = [
 ];
 
 const ModalForSale: FC<modalForSaleProps> = ({
+  clientInfor,
   isModalOpen,
   handleOk,
   handleCancel,
 }) => {
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [clientResponseStatus, setClientResponseStatus] =
+    useState<ResponseStatus[]>();
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const { userID } = useContext(AuthContext);
+  const { setIsSuccess } = useContext(SaleContext);
 
+  // handle action
+  const handleCheckAddZalo = async (addZaloFriend: boolean) => {
+    if (clientInfor) {
+      const res = await saleService.updateStatusAddZalo(
+        clientInfor.id,
+        addZaloFriend,
+        userID
+      );
+      res.success && setIsSuccess(true);
+    }
+  };
+  const handleCheckMoveToGroup = async (moveToPrivateGroup: boolean) => {
+    if (clientInfor) {
+      const res = await saleService.updateStatusMoveToPrivateGroup(
+        clientInfor.id,
+        moveToPrivateGroup,
+        userID
+      );
+      res.success && setIsSuccess(true);
+    }
+  };
   const handleSelectChange = (event: any) => {
     setSelectedStatus(event.target.value);
+    console.log(event.target.value);
   };
+
+  // Fetch
+  const fetchClientResponseStatus = async () => {
+    try {
+      const res = await saleService.fetchClientResponseStatus();
+      console.log(res);
+      setClientResponseStatus(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchCourses = async () => {
+    try {
+      const res = await utilsService.fetchCourses();
+      console.log("courses", res);
+      setCourses(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const fetchSessions = async () => {
+    try {
+      const res = await utilsService.fetchSessions();
+      setSessions(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const onChange = (key: string | string[]) => {
+    if (key.includes("3")) {
+      fetchCourses();
+      fetchClientResponseStatus();
+      fetchSessions()
+    }
+  };
+  useEffect(() => {
+    return () => setIsSuccess(false);
+  }, []);
   const items: CollapseProps["items"] = [
     {
       key: "1",
@@ -52,20 +127,40 @@ const ModalForSale: FC<modalForSaleProps> = ({
         <>
           <div className="border-bottom-solid pb-3">
             <p>
-              Tên:<span className="ml-2 font-bold">Đoàn Sĩ Nam</span>
+              Tên:<span className="ml-2 font-bold">{clientInfor?.name}</span>
             </p>
             <p>
-              SĐT:<span className="ml-2 font-bold">0123456789</span>
+              Ngày sinh:
+              <span className="ml-2 font-bold">{clientInfor?.dateOfBirth}</span>
+            </p>
+            <p>
+              SĐT:<span className="ml-2 font-bold">{clientInfor?.phone}</span>
+            </p>
+            <p>
+              Ngày tiếp nhận:
+              <span className="ml-2 font-bold">{clientInfor?.createdAt}</span>
             </p>
           </div>
           <div>
             <div className="flex items-center pt-3">
               <span className="mr-2">Kết bạn zalo:</span>
-              <input type="checkbox" name="" id="" defaultChecked={true} />
+              <input
+                type="checkbox"
+                name=""
+                id=""
+                defaultChecked={clientInfor?.addZaloFriend}
+                onChange={(e) => handleCheckAddZalo(e.target.checked)}
+              />
             </div>
             <div className="flex items-center pt-3">
               <span className="mr-2">Vào nhóm kín:</span>
-              <input type="checkbox" name="" id="" defaultChecked={true} />
+              <input
+                type="checkbox"
+                name=""
+                id=""
+                defaultChecked={clientInfor?.moveToPrivateGroup}
+                onChange={(e) => handleCheckMoveToGroup(e.target.checked)}
+              />
             </div>
           </div>
         </>
@@ -126,17 +221,36 @@ const ModalForSale: FC<modalForSaleProps> = ({
                 <option value="" disabled>
                   Chọn
                 </option>
-                <option value="1">Đặt lịch học thử</option>
-                <option value="2">Chốt</option>
-                <option value="3">Từ chối</option>
+                {clientResponseStatus &&
+                  clientResponseStatus.map((status) => (
+                    <option key={status.id + status.name} value={status.id}>
+                      {status.name}
+                    </option>
+                  ))}
               </select>
             </div>
           </div>
-          {selectedStatus === "1" && (
+          {["1", "2", "4", "5"].includes(selectedStatus) && (
             <>
               <div className="flex mt-2 items-center">
                 <p className="text-base font-bold">
-                  Đặt lịch<span className="text-red-600">*</span> :
+                  Đặt lịch gọi<span className="text-red-600">*</span> :
+                </p>
+                <div className="flex ml-8">
+                  <input
+                    type="date"
+                    className="w-52 h-8 px-2  text-gray-900 border-grey rounded bg-gray-50"
+                    placeholder="Enter text..."
+                  />
+                </div>
+              </div>
+            </>
+          )}
+          {selectedStatus === "3" && (
+            <>
+              <div className="flex mt-2 items-center">
+                <p className="text-base font-bold">
+                  Đặt lịch gọi<span className="text-red-600">*</span> :
                 </p>
                 <div className="flex ml-8">
                   <input
@@ -147,23 +261,72 @@ const ModalForSale: FC<modalForSaleProps> = ({
                 </div>
               </div>
               <div className="flex mt-2 items-center">
-                <p className="text-base font-bold">Cơ sở:</p>
-                <div className="flex ml-14">
+                <p className="text-base font-bold">
+                  Chọn ngày đến<span className="text-red-600">*</span> :
+                </p>
+                <div className="flex ml-8">
+                  <input
+                    type="date"
+                    className="w-52 h-8 px-2  text-gray-900 border-grey rounded bg-gray-50"
+                    placeholder="Enter text..."
+                  />
+                </div>
+              </div>
+            </>
+          )}
+          {selectedStatus === "6" && (
+            <>
+              <div className="flex mt-2 items-center">
+                <p className="text-base font-bold">
+                  Chọn khóa học<span className="text-red-600">*</span> :
+                </p>
+                <div className="flex ml-8">
                   <select
                     className="w-52 max-w-full h-8 px-2 text-sm text-gray-900 border-grey rounded bg-gray-50 "
-                    defaultValue=""
+                    defaultValue="a"
                   >
-                    <option value="" disabled>
-                      Chọn cơ sở
-                    </option>
-                    <option value="a">Đống Đa</option>
-                    <option value="b">Trường chinh</option>
+                    {courses &&
+                      courses.map((item) => (
+                        <option key={item.id + item.name} value={item.id}>
+                          {item.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              </div>
+              <div className="flex mt-2 items-center">
+                <p className="text-base font-bold">
+                  Chọn ngày bắt đầu<span className="text-red-600">*</span> :
+                </p>
+                <div className="flex ml-8">
+                  <input
+                    type="date"
+                    className="w-52 h-8 px-2  text-gray-900 border-grey rounded bg-gray-50"
+                    placeholder="Enter text..."
+                  />
+                </div>
+              </div>
+              <div className="flex mt-2 items-center">
+                <p className="text-base font-bold">
+                  Chọn ca<span className="text-red-600">*</span> :
+                </p>
+                <div className="flex ml-8">
+                  <select
+                    className="w-52 max-w-full h-8 px-2 text-sm text-gray-900 border-grey rounded bg-gray-50 "
+                    defaultValue="a"
+                  >
+                     {sessions &&
+                      sessions.map((item) => (
+                        <option key={item.id + item.name} value={item.id}>
+                          {item.name}
+                        </option>
+                      ))}
                   </select>
                 </div>
               </div>
             </>
           )}
-          {selectedStatus === "3" && (
+          {selectedStatus === "7" && (
             <>
               <div className="bg-yellow-200 rounded-lg shadow-md p-4 mt-4">
                 <div className="border-b-2 pb-4">
@@ -187,8 +350,7 @@ const ModalForSale: FC<modalForSaleProps> = ({
       ),
     },
   ];
-  // const onChange = (key: string | string[]) => {
-  // };
+
   return (
     <>
       <Modal
@@ -200,7 +362,7 @@ const ModalForSale: FC<modalForSaleProps> = ({
           <button
             type="button"
             onClick={handleCancel}
-            key={'btn-close'}
+            key={"btn-close"}
             className="mr-4 border-none px-4 py-1 rounded cursor-pointer hover:bg-gray-200"
           >
             Đóng
@@ -212,7 +374,7 @@ const ModalForSale: FC<modalForSaleProps> = ({
           overflow-y-auto
           items={items}
           defaultActiveKey={["1"]}
-          // onChange={onChange}
+          onChange={onChange}
         />
       </Modal>
     </>

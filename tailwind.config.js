@@ -8,6 +8,8 @@ export default {
   theme: {
     extend: {
       width: {
+        10: "10%",
+        13: "12%",
         95: "95%",
         200: "12.5rem"
       },
