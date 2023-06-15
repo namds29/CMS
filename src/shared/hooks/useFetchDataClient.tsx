@@ -4,12 +4,8 @@ import saleService from "../../services/sale-service";
 import { ReferSource } from "../interfaces/refer-source-types";
 import { SaleContext } from "../../pages/sale/context/sale-context";
 import utilsService from "../../services/utils-service";
+import { parseDate } from "../utils/parseDate";
 
-const parseDate = (params: string) => {
-  return params
-    ? new Date(Date.parse(params!)).toLocaleDateString("en-GB")
-    : "";
-};
 
 const useFetchDataClient = () => {
   const [data, setData] = useState<IClient[]>();

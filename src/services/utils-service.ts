@@ -2,7 +2,7 @@ import axios from "axios";
 
 async function fetchReferSource() {
     const token = localStorage.getItem('token')
-    let config = {
+    const config = {
         method: "get",
         url: import.meta.env.VITE_API_URL + "refer-sources",
         headers: {
@@ -14,7 +14,7 @@ async function fetchReferSource() {
 }
 async function fetchCourses() {
     const token = localStorage.getItem('token')
-    let config = {
+    const config = {
         method: "get",
         url: import.meta.env.VITE_API_URL + "courses",
         headers: {
@@ -26,7 +26,7 @@ async function fetchCourses() {
 }
 async function fetchSessions() {
     const token = localStorage.getItem('token')
-    let config = {
+    const config = {
         method: "get",
         url: import.meta.env.VITE_API_URL + "sessions",
         headers: {

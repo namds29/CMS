@@ -1,13 +1,19 @@
 import { FC, useState, useEffect, useContext } from "react";
-import { Modal } from "antd";
+import { Button, Modal } from "antd";
 import type { CollapseProps } from "antd";
 import { Collapse } from "antd";
-import { IClient, ResponseStatus } from "../../shared/interfaces/sale-types";
+import {
+  IClient,
+  IClientCareHistories,
+  ResponseStatus,
+} from "../../shared/interfaces/sale-types";
 import saleService from "../../services/sale-service";
 import { AuthContext } from "../../shared/contexts/authContext";
 import { SaleContext } from "../../pages/sale/context/sale-context";
 import utilsService from "../../services/utils-service";
 import { Course, Session } from "../../shared/interfaces/utils-types";
+import { useForm } from "react-hook-form";
+import { parseDate } from "../../shared/utils/parseDate";
 
 interface modalForSaleProps {
   clientInfor: IClient | undefined;
@@ -17,22 +23,6 @@ interface modalForSaleProps {
   handleOk: () => void;
   handleCancel: () => void;
 }
-const takeCareHistory = [
-  {
-    date: "1/1/2020",
-    status: "Cân nhắc",
-    content:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    note: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-  },
-  {
-    date: "2/2/2022",
-    status: "Chốt",
-    content:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    note: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-  },
-];
 
 const ModalForSale: FC<modalForSaleProps> = ({
   clientInfor,
@@ -40,9 +30,16 @@ const ModalForSale: FC<modalForSaleProps> = ({
   handleOk,
   handleCancel,
 }) => {
+  const {
+    register,
+    handleSubmit,
+    // formState: { errors },
+  } = useForm();
   const [selectedStatus, setSelectedStatus] = useState("");
   const [clientResponseStatus, setClientResponseStatus] =
     useState<ResponseStatus[]>();
+  const [clientCareHistories, setClientCareHistories] =
+    useState<IClientCareHistories[]>();
   const [courses, setCourses] = useState<Course[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
   const { userID } = useContext(AuthContext);
@@ -71,15 +68,14 @@ const ModalForSale: FC<modalForSaleProps> = ({
   };
   const handleSelectChange = (event: any) => {
     setSelectedStatus(event.target.value);
-    console.log(event.target.value);
   };
 
   // Fetch
   const fetchClientResponseStatus = async () => {
     try {
       const res = await saleService.fetchClientResponseStatus();
-      console.log(res);
       setClientResponseStatus(res);
+      console.log("res status");
     } catch (error) {
       console.log(error);
     }
@@ -88,7 +84,6 @@ const ModalForSale: FC<modalForSaleProps> = ({
   const fetchCourses = async () => {
     try {
       const res = await utilsService.fetchCourses();
-      console.log("courses", res);
       setCourses(res);
     } catch (error) {
       console.log(error);
@@ -102,14 +97,56 @@ const ModalForSale: FC<modalForSaleProps> = ({
       console.log(error);
     }
   };
-  const onChange = (key: string | string[]) => {
-    if (key.includes("3")) {
-      fetchCourses();
-      fetchClientResponseStatus();
-      fetchSessions()
+
+  const fetchClientCareHistories = async () => {
+    try {
+      if (clientInfor) {
+        const res = await saleService.fetchClientCareHistories(clientInfor.id);
+        console.log("histories", res);
+        setClientCareHistories(res);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onSubmit = async (data: any) => {
+    const form = {
+      content: data.feedback,
+      userID: userID,
+      responseStatus: Number(data.status),
+      startingDate: data.date,
+      note: data.note
+    };
+    console.log(form);
+    if (clientInfor) {
+      const res = await saleService.createClientCareHistory(
+        clientInfor.id,
+        form.content,
+        form.startingDate,
+        form.userID,
+        form.responseStatus
+      );
+      if (res.status === 200) {
+        Modal.success({
+          content: "Lưu thành công!",
+          // onOk() {
+          //   setIsSuccess(true);
+          // },
+        });
+      } else {
+        Modal.error({
+          content: "Lưu thất bại!",
+        });
+      }
     }
   };
   useEffect(() => {
+    fetchCourses();
+    fetchClientResponseStatus();
+    fetchSessions();
+    fetchClientCareHistories();
+
     return () => setIsSuccess(false);
   }, []);
   const items: CollapseProps["items"] = [
@@ -172,27 +209,34 @@ const ModalForSale: FC<modalForSaleProps> = ({
       children: (
         <>
           <div className="p-4 rounded border border-dashed 	border-gray-400 max-h-60 overflow-y-auto first:pt-0">
-            {takeCareHistory.map((item, index) => (
-              <div
-                key={index}
-                className="border-bottom-solid pb-3 last:border-b-0"
-              >
-                <div className="flex justify-between pt-3 ">
-                  <p className="font-bold text-base">{item.date}</p>
-                  <div className="px-3 bg-red-200 rounded leading-6">
-                    {item.status}
+            {clientCareHistories &&
+              clientCareHistories.map((item, index) => (
+                <div
+                  key={index}
+                  className="border-bottom-solid pb-3 last:border-b-0"
+                >
+                  <div className="flex justify-between pt-3 ">
+                    <p className="font-bold text-base">
+                      {parseDate(item.createdAt)}
+                    </p>
+                    <div className="px-3 bg-red-200 rounded leading-6">
+                      {item.responseStatus}
+                    </div>
+                  </div>
+                  <div className="mt-3">
+                    <p className="underline text-base">Nội dung:</p>
+                    <p>{item.content}</p>
+                  </div>
+                  <div className="mt-3">
+                    <p className="underline text-base">Ghi chú:</p>
+                    <ul className="m-0">
+                      <li className="list-disc">
+                        Đặt lịch: {item.startingDate}
+                      </li>
+                    </ul>
                   </div>
                 </div>
-                <div className="mt-3">
-                  <p className="underline text-base">Nội dung:</p>
-                  <p>{item.content}</p>
-                </div>
-                <div className="mt-3">
-                  <p className="underline text-base">Ghi chú:</p>
-                  <p>{item.note}</p>
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
         </>
       ),
@@ -201,11 +245,12 @@ const ModalForSale: FC<modalForSaleProps> = ({
       key: "3",
       label: "Phản hồi khách hàng",
       children: (
-        <>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="w-full">
             <textarea
               className="w-full max-w-full p-2 h-32"
               placeholder="Phản hồi khách hàng..."
+              {...register("feedback")}
             ></textarea>
           </div>
           <div className="flex mt-2 items-center">
@@ -216,7 +261,10 @@ const ModalForSale: FC<modalForSaleProps> = ({
               <select
                 className="w-52 max-w-full h-8 px-2 text-sm text-gray-900 border-grey rounded bg-gray-50 "
                 defaultValue=""
-                onChange={handleSelectChange}
+                // onChange={handleSelectChange}
+                {...register("status", {
+                  onChange: (e) => handleSelectChange(e),
+                })}
               >
                 <option value="" disabled>
                   Chọn
@@ -234,13 +282,14 @@ const ModalForSale: FC<modalForSaleProps> = ({
             <>
               <div className="flex mt-2 items-center">
                 <p className="text-base font-bold">
-                  Đặt lịch gọi<span className="text-red-600">*</span> :
+                  Đặt lịch<span className="text-red-600">*</span> :
                 </p>
                 <div className="flex ml-8">
                   <input
                     type="date"
                     className="w-52 h-8 px-2  text-gray-900 border-grey rounded bg-gray-50"
                     placeholder="Enter text..."
+                    {...register("date", { required: true })}
                   />
                 </div>
               </div>
@@ -250,7 +299,7 @@ const ModalForSale: FC<modalForSaleProps> = ({
             <>
               <div className="flex mt-2 items-center">
                 <p className="text-base font-bold">
-                  Đặt lịch gọi<span className="text-red-600">*</span> :
+                  Đặt lịch<span className="text-red-600">*</span> :
                 </p>
                 <div className="flex ml-8">
                   <input
@@ -315,7 +364,7 @@ const ModalForSale: FC<modalForSaleProps> = ({
                     className="w-52 max-w-full h-8 px-2 text-sm text-gray-900 border-grey rounded bg-gray-50 "
                     defaultValue="a"
                   >
-                     {sessions &&
+                    {sessions &&
                       sessions.map((item) => (
                         <option key={item.id + item.name} value={item.id}>
                           {item.name}
@@ -346,7 +395,22 @@ const ModalForSale: FC<modalForSaleProps> = ({
               </div>
             </>
           )}
-        </>
+          <div className="mt-3">
+            <p className="text-base font-bold">Ghi chú:</p>
+            <div className="w-full">
+              <textarea
+                className="w-full max-w-full p-2 h-24"
+                placeholder="Thêm ghi chú..."
+                {...register("note")}
+              ></textarea>
+            </div>
+          </div>
+          <div className="mt-6 text-right">
+            <Button type="primary" htmlType="submit">
+              Lưu
+            </Button>
+          </div>
+        </form>
       ),
     },
   ];
@@ -374,7 +438,7 @@ const ModalForSale: FC<modalForSaleProps> = ({
           overflow-y-auto
           items={items}
           defaultActiveKey={["1"]}
-          onChange={onChange}
+          // onChange={onChange}
         />
       </Modal>
     </>

@@ -29,7 +29,6 @@ const TableForSale = () => {
     setClientInfor(client);
     setIsModalOpen(true);
   };
-  console.log(data);
 
   const handleOk = () => {
     setIsModalOpen(false);
@@ -153,7 +152,7 @@ const TableForSale = () => {
         )}
       </div>
       <div className="mt-4 text-right">
-        <Pagination onChange={onChange} defaultCurrent={1} total={total} />
+        <Pagination onChange={onChange} defaultCurrent={1} total={total} pageSize={12} />
       </div>
     </>
   );

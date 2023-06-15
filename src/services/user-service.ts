@@ -6,7 +6,7 @@ const config_header = {
 };
 
 async function login(username: string, password: string) {
-  let config = {
+  const config = {
     method: "post",
     maxBodyLength: Infinity,
     url: import.meta.env.VITE_API_URL + "auth/login",

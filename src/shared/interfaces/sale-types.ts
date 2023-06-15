@@ -54,3 +54,19 @@ export interface ResponseStatus {
     updatedAt: Date;
     userID?: number;
 }
+export interface IClientCareHistories {
+    centerID: null | number;
+    clientID: number;
+    content: string;
+    courseID: null | number;
+    createdAt: string;
+    id: number;
+    nextCallDate: null | string;
+    note: null | string;
+    responseStatus: number;
+    sessionID: null | string;
+    startingDate: string;
+    updatedAt: string;
+    userID: number;
+    vistingDate: null | string;
+  }
