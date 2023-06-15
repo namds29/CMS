@@ -25,7 +25,7 @@ const CreateFormClient: FC<FormClientProps> = ({
     // formState: { errors },
   } = useForm();
 
-  const { isLoading, referSources } = useFetchReferSource();
+  const { referSources } = useFetchReferSource();
   const { setIsSuccess } = useContext(SaleContext);
   const { userID } = useContext(AuthContext);
   console.log(referSources);
@@ -40,7 +40,7 @@ const CreateFormClient: FC<FormClientProps> = ({
       clientHeathStatus: data.clientHeathStatus,
       userID: userID,
     };
-    console.log(form);
+
     const res = await saleService.createClient(form);
     if (res.status === 200) {
       Modal.success({
@@ -114,20 +114,14 @@ const CreateFormClient: FC<FormClientProps> = ({
               <select
                 className="w-[calc(100%-90px)] max-w-full h-8 px-2 text-sm text-gray-900 border-grey rounded bg-gray-50 "
                 {...register("referSource")}
-                value={1}
+                defaultValue={1}
               >
-                {isLoading ? (
-                  <option value={""}>Loading data</option>
-                ) : (
-                  referSources &&
-                  referSources.map(
-                    (item: ReferSource, index: number) => (
-                      <option key={index + item.name} value={item.id}>
-                        {item.name}
-                      </option>
-                    )
-                  )
-                )}
+                {referSources &&
+                  referSources.map((item: ReferSource, index: number) => (
+                    <option key={index + item.name} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
               </select>
             </div>
             <div className="flex flex-col mt-6">

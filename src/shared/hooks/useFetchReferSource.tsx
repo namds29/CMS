@@ -1,14 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
 import utilsService from "../../services/utils-service";
-
+import { ReferSource } from "../interfaces/refer-source-types";
+import { useEffect, useState } from "react";
 const useFetchReferSource = () => {
-  const { isLoading, isError, data: referSources, error } = useQuery({
-    queryKey: ["referSource"],
-    queryFn: utilsService.fetchReferSource,
-    retryOnMount: false
-  });
-
-  return { isLoading, isError, referSources, error };
+  const [referSources, setReferSources] = useState<ReferSource[]>([]);
+  // const [isLoading, setIsLoading] = useState(false);
+  const fetchReferSource = async () => {
+    const res = await utilsService.fetchReferSource();
+    setReferSources(res);
+  };
+  useEffect(()=>{
+    fetchReferSource()
+  },[])
+  return { referSources };
 };
 
 export default useFetchReferSource;
