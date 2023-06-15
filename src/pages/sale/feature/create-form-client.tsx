@@ -1,4 +1,4 @@
-import { Button, Modal } from "antd";
+import { Modal } from "antd";
 import { FC, useContext, useEffect } from "react";
 import saleService from "../../../services/sale-service";
 import { useForm } from "react-hook-form";
@@ -17,7 +17,6 @@ interface FormClientProps {
 const CreateFormClient: FC<FormClientProps> = ({
   isModalOpen,
   setIsModalOpen,
-  showModal,
   handleCancel,
 }) => {
   const {
@@ -26,11 +25,11 @@ const CreateFormClient: FC<FormClientProps> = ({
     // formState: { errors },
   } = useForm();
 
-  const { referSources } = useFetchReferSource();
-  const { isSuccess, setIsSuccess } = useContext(SaleContext);
-  const {userID} = useContext(AuthContext);
+  const { isLoading, referSources } = useFetchReferSource();
+  const { setIsSuccess } = useContext(SaleContext);
+  const { userID } = useContext(AuthContext);
   console.log(referSources);
-  
+
   const handleOk = async (data: any) => {
     const form = {
       name: data.name,
@@ -114,14 +113,21 @@ const CreateFormClient: FC<FormClientProps> = ({
               </p>
               <select
                 className="w-[calc(100%-90px)] max-w-full h-8 px-2 text-sm text-gray-900 border-grey rounded bg-gray-50 "
-                {...register("referSource")}  value={1}
+                {...register("referSource")}
+                value={1}
               >
-                {referSources &&
-                  referSources.map((item: ReferSource, index: number) => (
-                    <option key={index + item.name} value={item.id}>
-                      {item.name}
-                    </option>
-                  ))}
+                {isLoading ? (
+                  <option value={""}>Loading data</option>
+                ) : (
+                  referSources &&
+                  referSources.map(
+                    (item: ReferSource, index: number) => (
+                      <option key={index + item.name} value={item.id}>
+                        {item.name}
+                      </option>
+                    )
+                  )
+                )}
               </select>
             </div>
             <div className="flex flex-col mt-6">

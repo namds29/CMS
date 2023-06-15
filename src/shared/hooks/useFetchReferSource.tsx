@@ -5,6 +5,7 @@ const useFetchReferSource = () => {
   const { isLoading, isError, data: referSources, error } = useQuery({
     queryKey: ["referSource"],
     queryFn: utilsService.fetchReferSource,
+    retryOnMount: false
   });
 
   return { isLoading, isError, referSources, error };

@@ -42,7 +42,7 @@ const useFetchDataClient = () => {
   useEffect(() => {
     fetchClients();
   }, [currentPage, isSuccess]);
-  return { data, total, currentPage, setCurrentPage };
+  return { data, total, currentPage, setCurrentPage, setPageSize };
 };
 
 export default useFetchDataClient;

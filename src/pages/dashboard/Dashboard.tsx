@@ -1,11 +1,11 @@
-import Table from "../../components/table/Table";
+// import Table from "../../components/table/Table";
 
 
-const Dashboard = () => {
+function Dashboard() {
   return (
     <>
-      <Table />
+      {/* <Table /> */}
     </>
   );
-};
+}
 export default Dashboard;

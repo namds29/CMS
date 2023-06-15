@@ -33,15 +33,30 @@ const ModalForSale: FC<modalForSaleProps> = ({
   const {
     register,
     handleSubmit,
+    setValue,
     // formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      feedback: "",
+      responseStatus: "",
+      nextCallDate: "",
+      startingDate: "",
+      note: "",
+      centerId: "",
+      sessionId: "",
+      courseId: "",
+      visitingDate: "",
+    },
+  });
   const [selectedStatus, setSelectedStatus] = useState("");
   const [clientResponseStatus, setClientResponseStatus] =
     useState<ResponseStatus[]>();
-  const [clientCareHistories, setClientCareHistories] =
-    useState<IClientCareHistories[]>();
+  const [clientCareHistories, setClientCareHistories] = useState<
+    IClientCareHistories[]
+  >([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
+  const [isUpdatedSuccess, setIsUpdatedSuccess] = useState(false);
   const { userID } = useContext(AuthContext);
   const { setIsSuccess } = useContext(SaleContext);
 
@@ -68,6 +83,21 @@ const ModalForSale: FC<modalForSaleProps> = ({
   };
   const handleSelectChange = (event: any) => {
     setSelectedStatus(event.target.value);
+    const fieldsToReset = [
+      "feedback",
+      "nextCallDate",
+      "startingDate",
+      "note",
+      "centerId",
+      "sessionId",
+      "courseId",
+      "visitingDate",
+    ];
+    fieldsToReset.forEach((field: any) => {
+      if (field !== "responseStatus") {
+        setValue(field, "");
+      }
+    });
   };
 
   // Fetch
@@ -112,27 +142,38 @@ const ModalForSale: FC<modalForSaleProps> = ({
 
   const onSubmit = async (data: any) => {
     const form = {
-      content: data.feedback,
+      content: data.feedback.trim(),
       userID: userID,
-      responseStatus: Number(data.status),
-      startingDate: data.date,
-      note: data.note
+      responseStatus: Number(data.responseStatus),
+      nextCallDate: data.nextCallDate,
+      startingDate: data.startingDate,
+      visitingDate: data.visitingDate,
+      note: data.note.trim(),
+      centerId: Number(data.centerId),
+      sessionId: Number(data.sessionId),
+      courseID: Number(data.courseId),
     };
-    console.log(form);
     if (clientInfor) {
       const res = await saleService.createClientCareHistory(
         clientInfor.id,
         form.content,
         form.startingDate,
+        form.nextCallDate,
+        form.visitingDate,
         form.userID,
-        form.responseStatus
+        form.responseStatus,
+        form.note,
+        form.centerId,
+        form.sessionId,
+        form.courseID
       );
       if (res.status === 200) {
+        setIsUpdatedSuccess(true);  
         Modal.success({
           content: "Lưu thành công!",
-          // onOk() {
-          //   setIsSuccess(true);
-          // },
+          onOk() {
+            setIsUpdatedSuccess(false)  
+          },
         });
       } else {
         Modal.error({
@@ -142,10 +183,13 @@ const ModalForSale: FC<modalForSaleProps> = ({
     }
   };
   useEffect(() => {
+    fetchClientCareHistories();
+  }, [isUpdatedSuccess]);
+
+  useEffect(() => {
     fetchCourses();
     fetchClientResponseStatus();
     fetchSessions();
-    fetchClientCareHistories();
 
     return () => setIsSuccess(false);
   }, []);
@@ -208,36 +252,50 @@ const ModalForSale: FC<modalForSaleProps> = ({
       label: "Lịch sử chăm sóc khách hàng",
       children: (
         <>
-          <div className="p-4 rounded border border-dashed 	border-gray-400 max-h-60 overflow-y-auto first:pt-0">
-            {clientCareHistories &&
-              clientCareHistories.map((item, index) => (
-                <div
-                  key={index}
-                  className="border-bottom-solid pb-3 last:border-b-0"
-                >
-                  <div className="flex justify-between pt-3 ">
-                    <p className="font-bold text-base">
-                      {parseDate(item.createdAt)}
-                    </p>
-                    <div className="px-3 bg-red-200 rounded leading-6">
-                      {item.responseStatus}
+          {clientCareHistories.length < 1 && (
+            <div className="my-8 text-center">Chưa có lịch sử chăm sóc</div>
+          )}
+          {clientCareHistories.length >= 1 && (
+            <div className="p-4 rounded border border-dashed 	border-gray-400 max-h-60 overflow-y-auto first:pt-0">
+              {clientCareHistories &&
+                clientCareHistories.map((item, index) => (
+                  <div
+                    key={index}
+                    className="border-bottom-solid pb-3 last:border-b-0"
+                  >
+                    <div className="flex justify-between pt-3 ">
+                      <p className="font-bold text-base">
+                        {parseDate(item.createdAt)}
+                      </p>
+                      {item.responseStatusName !== "Chốt" && (
+                        <div className="px-3 bg-yellow-600 rounded leading-6 text-white">
+                          {item.responseStatusName}
+                        </div>
+                      )}
+                       {item.responseStatusName === "Chốt" && (
+                        <div className="px-3 bg-green-600 rounded leading-6 text-white">
+                          {item.responseStatusName}
+                        </div>
+                      )}
+                    </div>
+                    <div className="mt-3">
+                      <p className="underline text-base">Nội dung:</p>
+                      {item.content === "" && (
+                        <p className="my-4 italic">Không có nội dung</p>
+                      )}
+                      {item.content !== "" && <p>{item.content}</p>}
+                    </div>
+                    <div className="mt-3">
+                      <p className="underline text-base">Ghi chú:</p>
+                      {item.note === "" && (
+                        <p className="my-4 italic">Không có ghi chú</p>
+                      )}
+                      {item.note !== "" && <p>{item.note}</p>}
                     </div>
                   </div>
-                  <div className="mt-3">
-                    <p className="underline text-base">Nội dung:</p>
-                    <p>{item.content}</p>
-                  </div>
-                  <div className="mt-3">
-                    <p className="underline text-base">Ghi chú:</p>
-                    <ul className="m-0">
-                      <li className="list-disc">
-                        Đặt lịch: {item.startingDate}
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              ))}
-          </div>
+                ))}
+            </div>
+          )}
         </>
       ),
     },
@@ -262,7 +320,8 @@ const ModalForSale: FC<modalForSaleProps> = ({
                 className="w-52 max-w-full h-8 px-2 text-sm text-gray-900 border-grey rounded bg-gray-50 "
                 defaultValue=""
                 // onChange={handleSelectChange}
-                {...register("status", {
+                {...register("responseStatus", {
+                  required: true,
                   onChange: (e) => handleSelectChange(e),
                 })}
               >
@@ -278,7 +337,7 @@ const ModalForSale: FC<modalForSaleProps> = ({
               </select>
             </div>
           </div>
-          {["1", "2", "4", "5"].includes(selectedStatus) && (
+          {["1", "2", "4", "3", "5"].includes(selectedStatus) && (
             <>
               <div className="flex mt-2 items-center">
                 <p className="text-base font-bold">
@@ -289,7 +348,7 @@ const ModalForSale: FC<modalForSaleProps> = ({
                     type="date"
                     className="w-52 h-8 px-2  text-gray-900 border-grey rounded bg-gray-50"
                     placeholder="Enter text..."
-                    {...register("date", { required: true })}
+                    {...register("nextCallDate", { required: true })}
                   />
                 </div>
               </div>
@@ -299,18 +358,6 @@ const ModalForSale: FC<modalForSaleProps> = ({
             <>
               <div className="flex mt-2 items-center">
                 <p className="text-base font-bold">
-                  Đặt lịch<span className="text-red-600">*</span> :
-                </p>
-                <div className="flex ml-8">
-                  <input
-                    type="date"
-                    className="w-52 h-8 px-2  text-gray-900 border-grey rounded bg-gray-50"
-                    placeholder="Enter text..."
-                  />
-                </div>
-              </div>
-              <div className="flex mt-2 items-center">
-                <p className="text-base font-bold">
                   Chọn ngày đến<span className="text-red-600">*</span> :
                 </p>
                 <div className="flex ml-8">
@@ -318,6 +365,7 @@ const ModalForSale: FC<modalForSaleProps> = ({
                     type="date"
                     className="w-52 h-8 px-2  text-gray-900 border-grey rounded bg-gray-50"
                     placeholder="Enter text..."
+                    {...register("visitingDate", { required: true })}
                   />
                 </div>
               </div>
@@ -332,8 +380,12 @@ const ModalForSale: FC<modalForSaleProps> = ({
                 <div className="flex ml-8">
                   <select
                     className="w-52 max-w-full h-8 px-2 text-sm text-gray-900 border-grey rounded bg-gray-50 "
-                    defaultValue="a"
+                    defaultValue=""
+                    {...register("courseId", { required: true })}
                   >
+                    <option value="" disabled>
+                      Chọn khóa
+                    </option>
                     {courses &&
                       courses.map((item) => (
                         <option key={item.id + item.name} value={item.id}>
@@ -352,6 +404,7 @@ const ModalForSale: FC<modalForSaleProps> = ({
                     type="date"
                     className="w-52 h-8 px-2  text-gray-900 border-grey rounded bg-gray-50"
                     placeholder="Enter text..."
+                    {...register("startingDate")}
                   />
                 </div>
               </div>
@@ -362,8 +415,12 @@ const ModalForSale: FC<modalForSaleProps> = ({
                 <div className="flex ml-8">
                   <select
                     className="w-52 max-w-full h-8 px-2 text-sm text-gray-900 border-grey rounded bg-gray-50 "
-                    defaultValue="a"
+                    defaultValue=""
+                    {...register("sessionId")}
                   >
+                    <option value="" disabled>
+                      Chọn ca
+                    </option>
                     {sessions &&
                       sessions.map((item) => (
                         <option key={item.id + item.name} value={item.id}>
@@ -386,12 +443,6 @@ const ModalForSale: FC<modalForSaleProps> = ({
                   <p className="mt-2">+ Đưa vào nhóm đặc biệt</p>
                   <p className="mt-2">...</p>
                 </div>
-              </div>
-              <div className="w-full mt-4 rounded">
-                <textarea
-                  className="w-full max-w-full p-2 h-24"
-                  placeholder="Ghi chú..."
-                ></textarea>
               </div>
             </>
           )}

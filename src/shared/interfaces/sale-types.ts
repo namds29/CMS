@@ -64,6 +64,7 @@ export interface IClientCareHistories {
     nextCallDate: null | string;
     note: null | string;
     responseStatus: number;
+    responseStatusName: string;
     sessionID: null | string;
     startingDate: string;
     updatedAt: string;

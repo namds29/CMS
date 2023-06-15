@@ -1,10 +1,8 @@
-import { useState, useEffect, useContext } from "react";
+import { useState } from "react";
 import ModalForSale from "../modal/modal-for-sale";
 import useFetchDataClient from "../../shared/hooks/useFetchDataClient";
 import { IClient } from "../../shared/interfaces/sale-types";
 import { Pagination } from "antd";
-import { SaleContext } from "../../pages/sale/context/sale-context";
-import { AuthContext } from "../../shared/contexts/authContext";
 
 const columnNames = [
   "Nguồn",
@@ -137,7 +135,7 @@ const TableForSale = () => {
             className="absolute w-full flex justify-center items-center"
             x-show="!items.length"
           >
-            <p className="text-gray-500">No data available</p>
+            <p className="text-gray-500 text-xxl">No data available</p>
           </div>
         )}
 
@@ -152,7 +150,7 @@ const TableForSale = () => {
         )}
       </div>
       <div className="mt-4 text-right">
-        <Pagination onChange={onChange} defaultCurrent={1} total={total} pageSize={12} />
+        <Pagination onChange={onChange} defaultCurrent={currentPage} total={total} pageSize={12} />
       </div>
     </>
   );

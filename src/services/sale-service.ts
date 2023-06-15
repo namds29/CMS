@@ -103,8 +103,14 @@ async function createClientCareHistory(
   clientId: number,
   content: string,
   startingDate: string,
+  nextCallDate: string,
+  visitingDate: string,
   userID: number,
-  responseStatus: number
+  responseStatus: number,
+  note: string,
+  centerId: number,
+  sessionId: number,
+  courseID: number
 ) {
   const token = localStorage.getItem("token");
 
@@ -115,10 +121,16 @@ async function createClientCareHistory(
       Authorization: `Bearer ${token}`,
     },
     data: QueryString.stringify({
-      content,
-      startingDate,
-      userID,
-      responseStatus,
+      content: content,
+      startingDate: startingDate,
+      nextCallDate: nextCallDate,
+      visitingDate: visitingDate,
+      userID: userID,
+      responseStatus: responseStatus,
+      note: note,
+      centerId: centerId,
+      sessionId: sessionId,
+      courseID: courseID
     }),
   };
   const res = await axios.request(config);
