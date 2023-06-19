@@ -1,12 +1,11 @@
-import { FC, useState } from "react";
-import FetchDataTable from "./feature/fetch-data-table";
-import CreateFormClient from "./feature/create-form-client";
+// import Table from "../../components/table/Table";
+
+import { useState } from "react";
+import TableComponent from "../../components/table/Table";
 import { Button } from "antd";
-import { SaleProvider } from "./context/sale-context";
+import CreateFormClient from "./feature/create-form-client";
 
-interface indexProps {}
-
-const SalePage: FC<indexProps> = ({}) => {
+function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCancel = () => {
@@ -17,7 +16,7 @@ const SalePage: FC<indexProps> = ({}) => {
   };
 
   return (
-    <SaleProvider>
+    <>
       <div className="text-right mb-4">
         <Button type="primary" onClick={showModal}>
           Tạo khách hàng
@@ -31,9 +30,8 @@ const SalePage: FC<indexProps> = ({}) => {
           handleCancel={handleCancel}
         />
       )}
-      <FetchDataTable />
-    </SaleProvider>
+      <TableComponent />
+    </>
   );
-};
-
-export default SalePage;
+}
+export default Dashboard;

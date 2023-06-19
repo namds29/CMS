@@ -2,7 +2,7 @@ export interface IClient {
     id: number;
     createdAt: string;
     updatedAt: string;
-    name: string;
+    fullName: string;
     phone: string;
     address?: string;
     dateOfBirth?: string;
@@ -12,9 +12,12 @@ export interface IClient {
     userID?: number;
     addZaloFriend: boolean;
     moveToPrivateGroup: boolean;
-    referSource: number;
-    vistingDate : string,
-    courseID: string
+    referSourceID: number;
+    referSourceName: string;
+    vistingDate: string;
+    courseID: string;
+    startingDate: string;
+    responseStatusName: string
 }
 
 export interface ICare {
@@ -26,7 +29,6 @@ export interface ICare {
     client: IClient;
     note?: string;
 }
-
 
 export interface ClientHeathHistory {
     id: number;
@@ -70,4 +72,4 @@ export interface IClientCareHistories {
     updatedAt: string;
     userID: number;
     vistingDate: null | string;
-  }
+}

@@ -1,11 +1,11 @@
 import { Modal } from "antd";
 import { FC, useContext, useEffect } from "react";
-import saleService from "../../../services/sale-service";
 import { useForm } from "react-hook-form";
 import useFetchReferSource from "../../../shared/hooks/useFetchReferSource";
 import { ReferSource } from "../../../shared/interfaces/refer-source-types";
-import { SaleContext } from "../context/sale-context";
+
 import { AuthContext } from "../../../shared/contexts/authContext";
+import { useCreateDataClient } from "../../../shared/hooks/useDataClient";
 
 interface FormClientProps {
   isModalOpen: boolean;
@@ -26,7 +26,7 @@ const CreateFormClient: FC<FormClientProps> = ({
   } = useForm();
 
   const { referSources } = useFetchReferSource();
-  const { setIsSuccess } = useContext(SaleContext);
+  const { isSuccess, createClient } = useCreateDataClient();
   const { userID } = useContext(AuthContext);
   console.log(referSources);
 
@@ -40,26 +40,24 @@ const CreateFormClient: FC<FormClientProps> = ({
       clientHeathStatus: data.clientHeathStatus,
       userID: userID,
     };
-    console.log(form);
-
-    const res = await saleService.createClient(form);
-    if (res.status === 200) {
-      Modal.success({
-        content: "Thêm khách hàng thành công!",
-        onOk() {
-          setIsModalOpen(false);
-          setIsSuccess(true);
-        },
-      });
-    } else {
-      Modal.error({
-        content: "Thêm khách hàng thất bại!",
-      });
-    }
+    const res = createClient(form);
+    console.log(res, isSuccess);
+    
+    // const res = await saleService.createClient(form);
+    // if (res.status === 200) {
+    //   Modal.success({
+    //     content: "Thêm khách hàng thành công!",
+    //     onOk() {
+    //       setIsModalOpen(false);
+    //     },
+    //   });
+    // } else {
+    //   Modal.error({
+    //     content: "Thêm khách hàng thất bại!",
+    //   });
+    // }
   };
-  useEffect(() => {
-    return () => setIsSuccess(false);
-  }, []);
+  useEffect(() => {}, []);
   return (
     <>
       {isModalOpen && (
@@ -112,20 +110,18 @@ const CreateFormClient: FC<FormClientProps> = ({
               <p className="font-bold ">
                 Nguồn<span className="text-red-600">*</span> :
               </p>
-              {referSources.length > 0 && (
-                <select
-                  className="w-[calc(100%-90px)] max-w-full h-8 px-2 text-sm text-gray-900 border-grey rounded bg-gray-50 "
-                  {...register("referSource")}
-                  defaultValue={referSources[0].id}
-                >
-                  {referSources &&
-                    referSources.map((item: ReferSource, index: number) => (
-                      <option key={index + item.name} value={item.id}>
-                        {item.name}
-                      </option>
-                    ))}
-                </select>
-              )}
+              <select
+                className="w-[calc(100%-90px)] max-w-full h-8 px-2 text-sm text-gray-900 border-grey rounded bg-gray-50 "
+                {...register("referSource")}
+                defaultValue={1}
+              >
+                {referSources &&
+                  referSources.map((item: ReferSource, index: number) => (
+                    <option key={index + item.name} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
+              </select>
             </div>
             <div className="flex flex-col mt-6">
               <p className="font-bold ">Tình trạng khách hàng:</p>

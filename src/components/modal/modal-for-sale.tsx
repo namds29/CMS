@@ -153,6 +153,8 @@ const ModalForSale: FC<modalForSaleProps> = ({
       sessionId: Number(data.sessionId),
       courseID: Number(data.courseId),
     };
+    console.log(form);
+    
     if (clientInfor) {
       const res = await saleService.createClientCareHistory(
         clientInfor.id,
@@ -208,7 +210,7 @@ const ModalForSale: FC<modalForSaleProps> = ({
         <>
           <div className="border-bottom-solid pb-3">
             <p>
-              Tên:<span className="ml-2 font-bold">{clientInfor?.name}</span>
+              Tên:<span className="ml-2 font-bold">{clientInfor?.fullName}</span>
             </p>
             <p>
               Ngày sinh:

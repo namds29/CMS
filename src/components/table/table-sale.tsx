@@ -44,8 +44,8 @@ const TableForSale = () => {
   return (
     <>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full h-[calc(100vh-15rem)]">
-        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400  border-collapse">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <table className="w-full text-sm text-left text-gray-500  border-collapse">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
               {columnNames.map((columnName, index) => (
                 <th
@@ -78,16 +78,16 @@ const TableForSale = () => {
               data.map((item: IClient, index: number) => (
                 <tr
                   key={index}
-                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border-bottom-solid"
+                  className="bg-white border-b hover:bg-gray-50 border-bottom-solid"
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {item.referSource}
+                    {item.referSourceName}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">{item.status}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {item.createdAt}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">{item.name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{item.fullName}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{item.phone}</td>
                   <td className="px-6 py-4">{item.address}</td>
                   <td className="px-6 py-4 whitespace-nowrap">

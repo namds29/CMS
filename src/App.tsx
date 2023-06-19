@@ -2,7 +2,7 @@ import "./App.scss";
 import { Outlet, Route, Routes } from "react-router-dom";
 import LoginForm from "./pages/login/login-form";
 import Layout from "./components/layout/Layout";
-import Dashboard from "./pages/dashboard/Dashboard";
+import Dashboard from "./pages/dashboard";
 import SalePage from "./pages/sale";
 import { AuthProvider } from "./shared/contexts/authContext";
 

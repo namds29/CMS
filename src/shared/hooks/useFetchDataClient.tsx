@@ -6,7 +6,6 @@ import { SaleContext } from "../../pages/sale/context/sale-context";
 import utilsService from "../../services/utils-service";
 import { parseDate } from "../utils/parseDate";
 
-
 const useFetchDataClient = () => {
   const [data, setData] = useState<IClient[]>();
   const [total, setTotal] = useState<number>();
@@ -16,26 +15,19 @@ const useFetchDataClient = () => {
 
   const fetchClients = async () => {
     const resClient = await saleService.fetchClient(currentPage, pageSize);
-    setTotal(resClient.total);
-    const resReferSource = await utilsService.fetchReferSource();
+    setTotal(resClient.length);
     console.log("resClient.data", resClient.data);
 
-    const mapData = resClient.data.map((client: IClient) => {
+    const mapData = resClient.map((client: IClient) => {
       const createdAt = parseDate(client.createdAt);
       const dob = parseDate(client.dateOfBirth!);
       const lastCareTime = parseDate(client.lastCareTime!);
-      const matchingReferSource = resReferSource.find(
-        (item: ReferSource) => item.id === client.referSource
-      );
-      return matchingReferSource
-        ? {
-            ...client,
-            referSource: matchingReferSource.name,
-            createdAt: createdAt,
-            dateOfBirth: dob,
-            lastCareTime: lastCareTime,
-          }
-        : { ...client };
+      return {
+        ...client,
+        createdAt: createdAt,
+        dateOfBirth: dob,
+        lastCareTime: lastCareTime,
+      };
     });
     setData(mapData);
   };
