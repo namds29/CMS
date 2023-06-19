@@ -1,11 +1,13 @@
 import { Modal } from "antd";
 import { FC, useContext, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import useFetchReferSource from "../../../shared/hooks/useFetchReferSource";
-import { ReferSource } from "../../../shared/interfaces/refer-source-types";
-
 import { AuthContext } from "../../../shared/contexts/authContext";
 import { useCreateDataClient } from "../../../shared/hooks/useDataClient";
+import {
+  useFetchCenters,
+  useFetchReferSources,
+} from "../../../shared/hooks/useFetchUtilsData";
+import { ReferSource } from "../../../shared/interfaces/utils-types";
 
 interface FormClientProps {
   isModalOpen: boolean;
@@ -16,7 +18,6 @@ interface FormClientProps {
 
 const CreateFormClient: FC<FormClientProps> = ({
   isModalOpen,
-  setIsModalOpen,
   handleCancel,
 }) => {
   const {
@@ -25,24 +26,34 @@ const CreateFormClient: FC<FormClientProps> = ({
     // formState: { errors },
   } = useForm();
 
-  const { referSources } = useFetchReferSource();
-  const { isSuccess, createClient } = useCreateDataClient();
+  const { isLoadingReferSources, referSources } = useFetchReferSources();
+  const { isLoadingCenters, centers } = useFetchCenters();
+  const { statusResponse, createClient } = useCreateDataClient();
   const { userID } = useContext(AuthContext);
-  console.log(referSources);
 
   const handleOk = async (data: any) => {
     const form = {
       name: data.name,
       phone: data.phone,
       address: data.address,
-      dateOfBirth: data.dateOfBirth,
-      referSource: Number(data.referSource),
+      dateOfBirth: data.dateOfBirth ?? undefined,
+      addZaloFriend: data.addZaloFriend ?? 0,
+      moveToPrivateGroup: data.moveToPrivateGroup ?? 0,
+      isDeleted: 1,
+      referSourceID: Number(data.referSource),
       clientHeathStatus: data.clientHeathStatus,
+      intakeCenterID: Number(data.centers),
       userID: userID,
     };
-    const res = createClient(form);
-    console.log(res, isSuccess);
+    console.log(form);
     
+    const res = createClient(form);
+    if(statusResponse === 200){
+      console.log('here',res);
+      
+    }
+    // console.log(res, statusResponse);
+
     // const res = await saleService.createClient(form);
     // if (res.status === 200) {
     //   Modal.success({
@@ -110,13 +121,31 @@ const CreateFormClient: FC<FormClientProps> = ({
               <p className="font-bold ">
                 Nguồn<span className="text-red-600">*</span> :
               </p>
+              {!isLoadingReferSources && (
+                <select
+                  className="w-[calc(100%-90px)] max-w-full h-8 px-2 text-sm text-gray-900 border-grey rounded bg-gray-50 "
+                  {...register("referSource")}
+                  defaultValue={referSources[0].id}
+                >
+                  {referSources.map((item: ReferSource, index: number) => (
+                    <option key={index + item.name} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+            <div className="flex justify-between items-center mt-6">
+              <p className="font-bold ">
+                Cơ sở<span className="text-red-600">*</span> :
+              </p>
               <select
                 className="w-[calc(100%-90px)] max-w-full h-8 px-2 text-sm text-gray-900 border-grey rounded bg-gray-50 "
-                {...register("referSource")}
+                {...register("centers")}
                 defaultValue={1}
               >
-                {referSources &&
-                  referSources.map((item: ReferSource, index: number) => (
+                {!isLoadingCenters &&
+                  centers.map((item: ReferSource, index: number) => (
                     <option key={index + item.name} value={item.id}>
                       {item.name}
                     </option>

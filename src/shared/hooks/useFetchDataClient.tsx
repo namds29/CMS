@@ -1,9 +1,8 @@
+
 import { IClient } from "../interfaces/sale-types";
 import { useState, useEffect, useContext } from "react";
 import saleService from "../../services/sale-service";
-import { ReferSource } from "../interfaces/refer-source-types";
 import { SaleContext } from "../../pages/sale/context/sale-context";
-import utilsService from "../../services/utils-service";
 import { parseDate } from "../utils/parseDate";
 
 const useFetchDataClient = () => {

@@ -73,8 +73,12 @@ async function createClient({
   phone,
   address,
   dateOfBirth,
-  referSource,
+  addZaloFriend,
+  moveToPrivateGroup,
+  isDeleted,
+  referSourceID,
   clientHeathStatus,
+  intakeCenterID,
   userID,
 }: ICreateFormClient) {
   const token = localStorage.getItem("token");
@@ -86,13 +90,17 @@ async function createClient({
       Authorization: `Bearer ${token}`,
     },
     data: QueryString.stringify({
-      name,
-      phone,
-      address,
-      dateOfBirth,
-      referSource,
-      clientHeathStatus,
-      userID,
+      name: name,
+      phone: phone,
+      address: address,
+      dateOfBirth: dateOfBirth || undefined,
+      addZaloFriend: addZaloFriend,
+      moveToPrivateGroup: moveToPrivateGroup,
+      isDeleted: isDeleted,
+      referSourceID: referSourceID,
+      clientHeathStatus: clientHeathStatus,
+      intakeCenterID: intakeCenterID,
+      userID: userID,
     }),
   };
   const res = await axios.request(config);

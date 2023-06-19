@@ -2,10 +2,10 @@ import { Modal } from "antd";
 import { FC, useContext, useEffect } from "react";
 import saleService from "../../../services/sale-service";
 import { useForm } from "react-hook-form";
-import useFetchReferSource from "../../../shared/hooks/useFetchReferSource";
-import { ReferSource } from "../../../shared/interfaces/refer-source-types";
 import { SaleContext } from "../context/sale-context";
 import { AuthContext } from "../../../shared/contexts/authContext";
+import { useFetchReferSources } from "../../../shared/hooks/useFetchUtilsData";
+import { ReferSource } from "../../../shared/interfaces/utils-types";
 
 interface FormClientProps {
   isModalOpen: boolean;
@@ -25,7 +25,7 @@ const CreateFormClient: FC<FormClientProps> = ({
     // formState: { errors },
   } = useForm();
 
-  const { referSources } = useFetchReferSource();
+  const { referSources } = useFetchReferSources();
   const { setIsSuccess } = useContext(SaleContext);
   const { userID } = useContext(AuthContext);
   console.log(referSources);
@@ -36,8 +36,12 @@ const CreateFormClient: FC<FormClientProps> = ({
       phone: data.phone,
       address: data.address,
       dateOfBirth: data.dateOfBirth,
-      referSource: Number(data.referSource),
+      addZaloFriend:  null,
+      moveToPrivateGroup: null,
+      isDeleted: 1,
+      referSourceID: Number(data.referSource),
       clientHeathStatus: data.clientHeathStatus,
+      intakeCenterID: Number(data.centers),
       userID: userID,
     };
     console.log(form);
@@ -115,7 +119,26 @@ const CreateFormClient: FC<FormClientProps> = ({
               {referSources.length > 0 && (
                 <select
                   className="w-[calc(100%-90px)] max-w-full h-8 px-2 text-sm text-gray-900 border-grey rounded bg-gray-50 "
-                  {...register("referSource")}
+                  {...register("referSourceID")}
+                  defaultValue={referSources[0].id}
+                >
+                  {referSources &&
+                    referSources.map((item: ReferSource, index: number) => (
+                      <option key={index + item.name} value={item.id}>
+                        {item.name}
+                      </option>
+                    ))}
+                </select>
+              )}
+            </div>
+            <div className="flex justify-between items-center mt-6">
+              <p className="font-bold ">
+                Cơ sở<span className="text-red-600">*</span> :
+              </p>
+              {referSources.length > 0 && (
+                <select
+                  className="w-[calc(100%-90px)] max-w-full h-8 px-2 text-sm text-gray-900 border-grey rounded bg-gray-50 "
+                  {...register("intakeCenterID")}
                   defaultValue={referSources[0].id}
                 >
                   {referSources &&

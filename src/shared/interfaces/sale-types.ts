@@ -43,9 +43,13 @@ export interface ICreateFormClient {
     name: string,
     phone: number,
     address: string,
-    dateOfBirth: string,
-    referSource: number
+    dateOfBirth?: string,
+    addZaloFriend: boolean | null | undefined,
+    moveToPrivateGroup: boolean | null | undefined,
+    isDeleted: number,
+    referSourceID: number
     clientHeathStatus: string,
+    intakeCenterID: number,
     userID: number
 }
 

@@ -2,6 +2,7 @@ import { IClient, ICreateFormClient } from "../interfaces/sale-types";
 import saleService from "../../services/sale-service";
 import { parseDate } from "../utils/parseDate";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 
 const fetchClients = async () => {
   const resClient = await saleService.fetchClient(1, 12);
@@ -25,20 +26,22 @@ export const useFetchDataQueryClient = () => {
   const { isLoading, error, data } = useQuery({
     queryKey: ["clients"],
     queryFn: fetchClients,
-    staleTime: Infinity,
   });
   return { data, isLoading, error };
 };
 
 export const useCreateDataClient = () => {
+  const [statusResponse, setStatusResponse] = useState(0)
   const queryClient = useQueryClient();
-  const { isSuccess, mutate: createClient } = useMutation({
+  const { mutateAsync: createClient } = useMutation({
     mutationFn: (client: ICreateFormClient) => {
       return saleService.createClient(client);
     },
-    onSuccess: async () => {
+    onSuccess: async (data) => {
       await queryClient.invalidateQueries(["clients"]);
+      setStatusResponse(data.status)
+      
     },
   });
-  return { isSuccess, createClient };
+  return { statusResponse, createClient };
 };

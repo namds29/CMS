@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 import { IClient } from "../../shared/interfaces/sale-types";
 // import useFetchDataQueryClient from "../../shared/hooks/useFetchDataQueryClient";
@@ -29,15 +29,6 @@ const TableComponent = () => {
     setIsModalOpen(true);
   };
 
-  // filter
-  const [filteredData, setFilteredData] = useState([]);
-  const [filters, setFilters] = useState({
-    referSource: "",
-    name: "",
-    phone: "",
-  });
-  const filterInput = useRef(null);
-
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -49,31 +40,9 @@ const TableComponent = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-  // const applyFilter = () => {
-  //   if (data) {
-  //     const filtered = data.filter((item: FilterType) =>
-  //       item.name.toLowerCase().includes(filters.name)
-  //     );
 
-  //     setFilteredData(filtered);
-  //   }
-  // };
-  const handleFilterChange = (event: any) => {
-    console.log(filterInput.current);
-
-    setFilters(event.target.value);
-  };
-  useEffect(() => {
-    // applyFilter();
-  }, [filters]);
   return (
     <>
-      <input
-        type="text"
-        value={filters.name}
-        ref={filterInput}
-        onChange={handleFilterChange}
-      />
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full h-[calc(100vh-15rem)]">
         <table className="w-full text-sm text-left text-gray-500  border-collapse">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50">
