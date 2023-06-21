@@ -1,6 +1,6 @@
 import axios from "axios";
 import QueryString from "qs";
-import { ICreateFormClient } from "../shared/interfaces/sale-types";
+import { IDetailFormClient, IUpdateFormClient } from "../shared/interfaces/sale-types";
 
 async function fetchClient(page: number, per_page: number) {
   const token = localStorage.getItem("token");
@@ -31,31 +31,27 @@ async function fetchClientResponseStatus() {
   const res = await axios.request(config);
   return res.data;
 }
-async function updateStatusAddZalo(
+async function updateDetailClient(
   clientId: number,
-  addZaloFriend: boolean,
-  userID: number
+  client: IUpdateFormClient
 ) {
   const token = localStorage.getItem("token");
-  const data = QueryString.stringify({ addZaloFriend, userID });
-  const config = {
-    method: "put",
-    url: import.meta.env.VITE_API_URL + "clients/" + clientId,
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    data: data,
-  };
-  const res = await axios.request(config);
-  return res.data;
-}
-async function updateStatusMoveToPrivateGroup(
-  clientId: number,
-  moveToPrivateGroup: boolean,
-  userID: number
-) {
-  const token = localStorage.getItem("token");
-  const data = QueryString.stringify({ moveToPrivateGroup, userID });
+  const data = QueryString.stringify(
+    {
+      name: client.name || undefined,
+      phone: client.phone || undefined,
+      address: client.address || undefined,
+      dateOfBirth: client.dateOfBirth || undefined,
+      addZaloFriend: client.addZaloFriend,
+      moveToPrivateGroup: client.moveToPrivateGroup,
+      isDeleted: client.isDeleted || undefined,
+      referSourceID: client.referSourceID || undefined,
+      clientHeathStatus: client.clientHeathStatus || undefined,
+      intakeCenterID: client.intakeCenterID || undefined,
+      userID: client.userID || undefined,
+    }
+  );
+
   const config = {
     method: "put",
     url: import.meta.env.VITE_API_URL + "clients/" + clientId,
@@ -68,19 +64,7 @@ async function updateStatusMoveToPrivateGroup(
   return res.data;
 }
 
-async function createClient({
-  name,
-  phone,
-  address,
-  dateOfBirth,
-  addZaloFriend,
-  moveToPrivateGroup,
-  isDeleted,
-  referSourceID,
-  clientHeathStatus,
-  intakeCenterID,
-  userID,
-}: ICreateFormClient) {
+async function createClient(client: IDetailFormClient) {
   const token = localStorage.getItem("token");
 
   const config = {
@@ -90,17 +74,17 @@ async function createClient({
       Authorization: `Bearer ${token}`,
     },
     data: QueryString.stringify({
-      name: name,
-      phone: phone,
-      address: address,
-      dateOfBirth: dateOfBirth || undefined,
-      addZaloFriend: addZaloFriend,
-      moveToPrivateGroup: moveToPrivateGroup,
-      isDeleted: isDeleted,
-      referSourceID: referSourceID,
-      clientHeathStatus: clientHeathStatus,
-      intakeCenterID: intakeCenterID,
-      userID: userID,
+      name: client.name,
+      phone: client.phone,
+      address: client.address,
+      dateOfBirth: client.dateOfBirth || undefined,
+      addZaloFriend: client.addZaloFriend,
+      moveToPrivateGroup: client.moveToPrivateGroup,
+      isDeleted: client.isDeleted,
+      referSourceID: client.referSourceID,
+      clientHeathStatus: client.clientHeathStatus,
+      intakeCenterID: client.intakeCenterID || undefined,
+      userID: client.userID,
     }),
   };
   const res = await axios.request(config);
@@ -111,33 +95,33 @@ async function createClientCareHistory(
   clientId: number,
   content: string,
   startingDate: string,
-  nextCallDate: string,
+  nextCallSchedule: string,
   visitingDate: string,
   userID: number,
-  responseStatus: number,
+  responseStatusID: number,
   note: string,
   centerId: number,
   sessionId: number,
   courseID: number
 ) {
   const token = localStorage.getItem("token");
-
   const config = {
     method: "post",
-    url: import.meta.env.VITE_API_URL + "client-care-histories/"+ clientId,
+    url: import.meta.env.VITE_API_URL + "client-care-histories/" + clientId,
     headers: {
       Authorization: `Bearer ${token}`,
     },
+
     data: QueryString.stringify({
       content: content,
       startingDate: startingDate,
-      nextCallDate: nextCallDate,
+      nextCallSchedule: nextCallSchedule,
       visitingDate: visitingDate,
       userID: userID,
-      responseStatus: responseStatus,
+      responseStatusID: responseStatusID,
       note: note,
-      centerId: centerId,
-      sessionId: sessionId,
+      centerID: centerId,
+      sessionID: sessionId,
       courseID: courseID
     }),
   };
@@ -146,24 +130,23 @@ async function createClientCareHistory(
 }
 
 async function fetchClientCareHistories(clientId: number) {
-    const token = localStorage.getItem("token");
-    const config = {
-      method: "get",
-      url: import.meta.env.VITE_API_URL + "client-care-histories/"+ clientId,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    const res = await axios.request(config);
-    return res.data;
-  }
+  const token = localStorage.getItem("token");
+  const config = {
+    method: "get",
+    url: import.meta.env.VITE_API_URL + "client-care-histories/" + clientId,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const res = await axios.request(config);
+  return res.data;
+}
 
 export default {
   fetchClient,
   createClient,
   fetchClientResponseStatus,
-  updateStatusAddZalo,
-  updateStatusMoveToPrivateGroup,
+  updateDetailClient,
   createClientCareHistory,
   fetchClientCareHistories
 };

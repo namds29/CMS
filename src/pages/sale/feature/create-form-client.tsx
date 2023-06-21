@@ -1,10 +1,12 @@
 import { Modal } from "antd";
 import { FC, useContext, useEffect } from "react";
-import saleService from "../../../services/sale-service";
 import { useForm } from "react-hook-form";
-import { SaleContext } from "../context/sale-context";
 import { AuthContext } from "../../../shared/contexts/authContext";
-import { useFetchReferSources } from "../../../shared/hooks/useFetchUtilsData";
+import { useCreateDataClient } from "../../../shared/hooks/useDataClient";
+import {
+  useFetchCenters,
+  useFetchReferSources,
+} from "../../../shared/hooks/useFetchUtilsData";
 import { ReferSource } from "../../../shared/interfaces/utils-types";
 
 interface FormClientProps {
@@ -26,44 +28,41 @@ const CreateFormClient: FC<FormClientProps> = ({
   } = useForm();
 
   const { referSources } = useFetchReferSources();
-  const { setIsSuccess } = useContext(SaleContext);
+  const { centers } = useFetchCenters();
+  const { createClient } = useCreateDataClient();
   const { userID } = useContext(AuthContext);
-  console.log(referSources);
 
   const handleOk = async (data: any) => {
     const form = {
       name: data.name,
       phone: data.phone,
       address: data.address,
-      dateOfBirth: data.dateOfBirth,
-      addZaloFriend:  null,
-      moveToPrivateGroup: null,
+      dateOfBirth: data.dateOfBirth ?? undefined,
+      addZaloFriend: data.addZaloFriend ?? 0,
+      moveToPrivateGroup: data.moveToPrivateGroup ?? 0,
       isDeleted: 1,
       referSourceID: Number(data.referSource),
       clientHeathStatus: data.clientHeathStatus,
-      intakeCenterID: Number(data.centers),
+      intakeCenterID: Number(data.centers) ?? undefined,
       userID: userID,
     };
     console.log(form);
 
-    const res = await saleService.createClient(form);
-    if (res.status === 200) {
-      Modal.success({
-        content: "Thêm khách hàng thành công!",
-        onOk() {
-          setIsModalOpen(false);
-          setIsSuccess(true);
-        },
-      });
-    } else {
-      Modal.error({
-        content: "Thêm khách hàng thất bại!",
-      });
-    }
+    createClient(form, {
+      onSuccess: (data) => {
+        if (data.status === 200) {
+          Modal.success({
+            content: "Thêm khách hàng thành công!",
+            onOk() {
+              setIsModalOpen(false);
+            },
+          });
+        }
+      },
+    });
   };
-  useEffect(() => {
-    return () => setIsSuccess(false);
-  }, []);
+
+  useEffect(() => {}, []);
   return (
     <>
       {isModalOpen && (
@@ -116,39 +115,37 @@ const CreateFormClient: FC<FormClientProps> = ({
               <p className="font-bold ">
                 Nguồn<span className="text-red-600">*</span> :
               </p>
-              {referSources.length > 0 && (
+              {
                 <select
                   className="w-[calc(100%-90px)] max-w-full h-8 px-2 text-sm text-gray-900 border-grey rounded bg-gray-50 "
-                  {...register("referSourceID")}
-                  defaultValue={referSources[0].id}
+                  {...register("referSource", {required: true})}
+                  defaultValue={''}
                 >
-                  {referSources &&
-                    referSources.map((item: ReferSource, index: number) => (
-                      <option key={index + item.name} value={item.id}>
-                        {item.name}
-                      </option>
-                    ))}
+                  <option value={''} disabled>Chọn nguồn</option>
+                  {referSources.map((item: ReferSource, index: number) => (
+                    <option key={index + item.name} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
                 </select>
-              )}
+              }
             </div>
             <div className="flex justify-between items-center mt-6">
-              <p className="font-bold ">
-                Cơ sở<span className="text-red-600">*</span> :
-              </p>
-              {referSources.length > 0 && (
-                <select
-                  className="w-[calc(100%-90px)] max-w-full h-8 px-2 text-sm text-gray-900 border-grey rounded bg-gray-50 "
-                  {...register("intakeCenterID")}
-                  defaultValue={referSources[0].id}
-                >
-                  {referSources &&
-                    referSources.map((item: ReferSource, index: number) => (
-                      <option key={index + item.name} value={item.id}>
-                        {item.name}
-                      </option>
-                    ))}
-                </select>
-              )}
+              <p className="font-bold ">Cơ sở:</p>
+              <select
+                className="w-[calc(100%-90px)] max-w-full h-8 px-2 text-sm text-gray-900 border-grey rounded bg-gray-50 "
+                {...register("centers")}
+                defaultValue={""}
+              >
+                <option value="" disabled>
+                  Chọn cơ sở
+                </option>
+                {centers.map((item: ReferSource, index: number) => (
+                  <option key={index + item.name} value={item.id}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="flex flex-col mt-6">
               <p className="font-bold ">Tình trạng khách hàng:</p>

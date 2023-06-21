@@ -14,6 +14,7 @@ import utilsService from "../../services/utils-service";
 import { Course, Session } from "../../shared/interfaces/utils-types";
 import { useForm } from "react-hook-form";
 import { parseDate } from "../../shared/utils/parseDate";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface modalForSaleProps {
   clientInfor: IClient | undefined;
@@ -37,9 +38,9 @@ const ModalForSale: FC<modalForSaleProps> = ({
     // formState: { errors },
   } = useForm({
     defaultValues: {
-      feedback: "",
-      responseStatus: "",
-      nextCallDate: "",
+      content: "",
+      responseStatusID: "",
+      nextCallSchedule: "",
       startingDate: "",
       note: "",
       centerId: "",
@@ -59,33 +60,33 @@ const ModalForSale: FC<modalForSaleProps> = ({
   const [isUpdatedSuccess, setIsUpdatedSuccess] = useState(false);
   const { userID } = useContext(AuthContext);
   const { setIsSuccess } = useContext(SaleContext);
-
+  const queryClient = useQueryClient();
   // handle action
-  const handleCheckAddZalo = async (addZaloFriend: boolean) => {
+  const handleCheckboxChange = async (fieldName: string, value: any) => {
     if (clientInfor) {
-      const res = await saleService.updateStatusAddZalo(
+      
+      const checked = value ? 1 : 0;
+      console.log(checked);
+      
+      const updatedClient = {
+        [fieldName]: checked,
+      };
+
+      const res = await saleService.updateDetailClient(
         clientInfor.id,
-        addZaloFriend,
-        userID
+        updatedClient
       );
-      res.success && setIsSuccess(true);
+      console.log(res);
+      
+      res.success && queryClient.invalidateQueries(["clients"]);
     }
   };
-  const handleCheckMoveToGroup = async (moveToPrivateGroup: boolean) => {
-    if (clientInfor) {
-      const res = await saleService.updateStatusMoveToPrivateGroup(
-        clientInfor.id,
-        moveToPrivateGroup,
-        userID
-      );
-      res.success && setIsSuccess(true);
-    }
-  };
+
   const handleSelectChange = (event: any) => {
     setSelectedStatus(event.target.value);
     const fieldsToReset = [
       "feedback",
-      "nextCallDate",
+      "nextCallSchedule",
       "startingDate",
       "note",
       "centerId",
@@ -94,7 +95,7 @@ const ModalForSale: FC<modalForSaleProps> = ({
       "visitingDate",
     ];
     fieldsToReset.forEach((field: any) => {
-      if (field !== "responseStatus") {
+      if (field !== "responseStatusID") {
         setValue(field, "");
       }
     });
@@ -142,39 +143,41 @@ const ModalForSale: FC<modalForSaleProps> = ({
 
   const onSubmit = async (data: any) => {
     const form = {
-      content: data.feedback.trim(),
+      content: data.content.trim(),
       userID: userID,
-      responseStatus: Number(data.responseStatus),
-      nextCallDate: data.nextCallDate,
-      startingDate: data.startingDate,
-      visitingDate: data.visitingDate,
+      responseStatusID: Number(data.responseStatusID),
+      nextCallSchedule:
+        data.nextCallSchedule == "" ? undefined : data.nextCallSchedule,
+      startingDate: data.startingDate == "" ? undefined : data.startingDate,
+      visitingDate: data.visitingDate == "" ? undefined : data.visitingDate,
       note: data.note.trim(),
       centerId: Number(data.centerId),
       sessionId: Number(data.sessionId),
       courseID: Number(data.courseId),
     };
     console.log(form);
-    
+
     if (clientInfor) {
       const res = await saleService.createClientCareHistory(
         clientInfor.id,
         form.content,
         form.startingDate,
-        form.nextCallDate,
+        form.nextCallSchedule,
         form.visitingDate,
         form.userID,
-        form.responseStatus,
+        form.responseStatusID,
         form.note,
         form.centerId,
         form.sessionId,
         form.courseID
       );
       if (res.status === 200) {
-        setIsUpdatedSuccess(true);  
+        setIsUpdatedSuccess(true);
         Modal.success({
           content: "Lưu thành công!",
           onOk() {
-            setIsUpdatedSuccess(false)  
+            queryClient.invalidateQueries(['clients']);
+            setIsUpdatedSuccess(false);
           },
         });
       } else {
@@ -210,7 +213,8 @@ const ModalForSale: FC<modalForSaleProps> = ({
         <>
           <div className="border-bottom-solid pb-3">
             <p>
-              Tên:<span className="ml-2 font-bold">{clientInfor?.fullName}</span>
+              Tên:
+              <span className="ml-2 font-bold">{clientInfor?.fullName}</span>
             </p>
             <p>
               Ngày sinh:
@@ -221,7 +225,9 @@ const ModalForSale: FC<modalForSaleProps> = ({
             </p>
             <p>
               Ngày tiếp nhận:
-              <span className="ml-2 font-bold">{clientInfor?.createdAt}</span>
+              <span className="ml-2 font-bold">
+                {clientInfor && parseDate(clientInfor?.createdAt)}
+              </span>
             </p>
           </div>
           <div>
@@ -231,8 +237,10 @@ const ModalForSale: FC<modalForSaleProps> = ({
                 type="checkbox"
                 name=""
                 id=""
-                defaultChecked={clientInfor?.addZaloFriend}
-                onChange={(e) => handleCheckAddZalo(e.target.checked)}
+                defaultChecked={clientInfor?.addZaloFriend === 0 ? false : true}
+                onChange={(e) =>
+                  handleCheckboxChange("addZaloFriend", e.target.checked)
+                }
               />
             </div>
             <div className="flex items-center pt-3">
@@ -242,7 +250,9 @@ const ModalForSale: FC<modalForSaleProps> = ({
                 name=""
                 id=""
                 defaultChecked={clientInfor?.moveToPrivateGroup}
-                onChange={(e) => handleCheckMoveToGroup(e.target.checked)}
+                onChange={(e) =>
+                  handleCheckboxChange("moveToPrivateGroup", e.target.checked)
+                }
               />
             </div>
           </div>
@@ -274,7 +284,7 @@ const ModalForSale: FC<modalForSaleProps> = ({
                           {item.responseStatusName}
                         </div>
                       )}
-                       {item.responseStatusName === "Chốt" && (
+                      {item.responseStatusName === "Chốt" && (
                         <div className="px-3 bg-green-600 rounded leading-6 text-white">
                           {item.responseStatusName}
                         </div>
@@ -310,19 +320,19 @@ const ModalForSale: FC<modalForSaleProps> = ({
             <textarea
               className="w-full max-w-full p-2 h-32"
               placeholder="Phản hồi khách hàng..."
-              {...register("feedback")}
+              {...register("content", { required: true })}
             ></textarea>
           </div>
-          <div className="flex mt-2 items-center">
+          <div className="flex flex-col mt-2">
             <p className="text-base font-bold">
               Trạng thái<span className="text-red-600">*</span> :
             </p>
-            <div className="flex ml-4">
+            <div className="flex mt-2">
               <select
                 className="w-52 max-w-full h-8 px-2 text-sm text-gray-900 border-grey rounded bg-gray-50 "
                 defaultValue=""
                 // onChange={handleSelectChange}
-                {...register("responseStatus", {
+                {...register("responseStatusID", {
                   required: true,
                   onChange: (e) => handleSelectChange(e),
                 })}
@@ -341,16 +351,16 @@ const ModalForSale: FC<modalForSaleProps> = ({
           </div>
           {["1", "2", "4", "3", "5"].includes(selectedStatus) && (
             <>
-              <div className="flex mt-2 items-center">
+              <div className=" mt-2 items-center">
                 <p className="text-base font-bold">
-                  Đặt lịch<span className="text-red-600">*</span> :
+                  Ngày gọi lại<span className="text-red-600">*</span> :
                 </p>
-                <div className="flex ml-8">
+                <div className="flex mt-2">
                   <input
                     type="date"
                     className="w-52 h-8 px-2  text-gray-900 border-grey rounded bg-gray-50"
                     placeholder="Enter text..."
-                    {...register("nextCallDate", { required: true })}
+                    {...register("nextCallSchedule", { required: true })}
                   />
                 </div>
               </div>

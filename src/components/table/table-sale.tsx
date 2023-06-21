@@ -1,8 +1,8 @@
+import { useFetchDataQueryClient } from "../../shared/hooks/useDataClient";
+import { IClient } from "../../shared/interfaces/sale-types";
 import { useState } from "react";
 import ModalForSale from "../modal/modal-for-sale";
-import useFetchDataClient from "../../shared/hooks/useFetchDataClient";
-import { IClient } from "../../shared/interfaces/sale-types";
-import { Pagination } from "antd";
+import { parseDate } from "../../shared/utils/parseDate";
 
 const columnNames = [
   "Nguồn",
@@ -15,16 +15,29 @@ const columnNames = [
   "Lần chăm sóc gần nhất",
   "Kết bạn Zalo",
   "Đưa vào nhóm kín",
+  "Cơ sở chuyển"
 ];
 const TableForSale = () => {
-  const { data, total, setCurrentPage, currentPage } = useFetchDataClient();
-  // console.log(data);
+  const { data = [] } = useFetchDataQueryClient();
   const [clientInfor, setClientInfor] = useState<IClient>();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // console.log(data);
+
+  const transformData = data.sort((a: IClient, b: IClient) => {
+    const dateA = new Date(a.createdAt);
+    const dateB = new Date(b.createdAt);
+
+    return dateB.getTime() - dateA.getTime();
+  });
+  // console.log('trán',transformData);
 
   const showModalTakeCare = (client: IClient) => {
     console.log(client);
     setClientInfor(client);
+    setIsModalOpen(true);
+  };
+
+  const showModal = () => {
     setIsModalOpen(true);
   };
 
@@ -34,11 +47,6 @@ const TableForSale = () => {
 
   const handleCancel = () => {
     setIsModalOpen(false);
-  };
-  const onChange = (page: number) => {
-    console.log(page);
-
-    setCurrentPage(page);
   };
 
   return (
@@ -69,13 +77,13 @@ const TableForSale = () => {
             </tr>
           </thead>
           <tbody>
-            {!data && (
+            {!transformData && (
               <tr className="relative">
                 <td className="opacity-0 py-16">No data</td>
               </tr>
             )}
-            {data &&
-              data.map((item: IClient, index: number) => (
+            {transformData &&
+              transformData.map((item: IClient, index: number) => (
                 <tr
                   key={index}
                   className="bg-white border-b hover:bg-gray-50 border-bottom-solid"
@@ -83,25 +91,29 @@ const TableForSale = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     {item.referSourceName}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">{item.status}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {item.createdAt}
+                    {item.responseStatusName}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">{item.fullName}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {parseDate(item.createdAt)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {item.fullName}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap">{item.phone}</td>
                   <td className="px-6 py-4">{item.address}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {item.dateOfBirth}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {item.lastCareTime}
+                    {item.lastCareTime ? parseDate(item.lastCareTime) : ""}
                   </td>
                   <td className="px-6 py-4">
                     <input
                       type="checkbox"
                       name=""
                       id=""
-                      checked={item.addZaloFriend}
+                      checked={item.addZaloFriend === 0 ? false : true}
                       readOnly
                     />
                   </td>
@@ -114,6 +126,7 @@ const TableForSale = () => {
                       readOnly={true}
                     />
                   </td>
+                  <td className="px-6 py-4">{item.intakeCenterName}</td>
                   <td className="sticky right-0 bg-gray-100 whitespace-nowrap">
                     <div className="flex">
                       <div className="text-center w-full font-bold">
@@ -130,27 +143,15 @@ const TableForSale = () => {
               ))}
           </tbody>
         </table>
-        {!data && (
-          <div
-            className="absolute w-full flex justify-center items-center"
-            x-show="!items.length"
-          >
-            <p className="text-gray-500 text-xxl">No data available</p>
-          </div>
-        )}
-
         {isModalOpen && (
           <ModalForSale
-            clientInfor={clientInfor}
             isModalOpen={isModalOpen}
-            showModal={showModalTakeCare}
+            showModal={showModal}
             handleOk={handleOk}
             handleCancel={handleCancel}
+            clientInfor={clientInfor}
           />
         )}
-      </div>
-      <div className="mt-4 text-right">
-        <Pagination onChange={onChange} defaultCurrent={currentPage} total={total} pageSize={12} />
       </div>
     </>
   );

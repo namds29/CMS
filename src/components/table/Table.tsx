@@ -103,7 +103,7 @@ const TableComponent = () => {
                       type="checkbox"
                       name=""
                       id=""
-                      checked={item.addZaloFriend}
+                      checked={item.addZaloFriend ? true : false}
                       readOnly
                     />
                   </td>

@@ -7,10 +7,10 @@ export interface IClient {
     address?: string;
     dateOfBirth?: string;
     status: string;
-    intakeCenter?: number;
+    intakeCenterName?: number;
     lastCareTime?: string;
     userID?: number;
-    addZaloFriend: boolean;
+    addZaloFriend: number;
     moveToPrivateGroup: boolean;
     referSourceID: number;
     referSourceName: string;
@@ -39,7 +39,7 @@ export interface ClientHeathHistory {
     userID?: number;
 }
 
-export interface ICreateFormClient {
+export interface IDetailFormClient {
     name: string,
     phone: number,
     address: string,
@@ -52,7 +52,19 @@ export interface ICreateFormClient {
     intakeCenterID: number,
     userID: number
 }
-
+export interface IUpdateFormClient {
+    name?: string,
+    phone?: number,
+    address?: string,
+    dateOfBirth?: string,
+    addZaloFriend?: boolean | null,
+    moveToPrivateGroup?: boolean | null,
+    isDeleted?: number,
+    referSourceID?: number,
+    clientHeathStatus?: string,
+    intakeCenterID?: number,
+    userID?: number
+}
 export interface ResponseStatus {
     id: number;
     name: string;
@@ -67,9 +79,9 @@ export interface IClientCareHistories {
     courseID: null | number;
     createdAt: string;
     id: number;
-    nextCallDate: null | string;
+    nextCallSchedule: null | string;
     note: null | string;
-    responseStatus: number;
+    responseStatusID: number;
     responseStatusName: string;
     sessionID: null | string;
     startingDate: string;

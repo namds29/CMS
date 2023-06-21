@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom';
 
 import styles from './Sidebar.module.scss';
-import {  PieChartOutlined } from '@ant-design/icons';
+import {  FundOutlined, PieChartOutlined, UserOutlined } from '@ant-design/icons';
 
 const Sidebar = ({ menuOpen }: any) => {
     const menuItem = [
-        // { title: 'Dashboard', icon: <FundOutlined />, route: '/dashboard' },
+        { title: 'Dashboard', icon: <FundOutlined />, route: '/dashboard' },
         { title: 'Sale', icon: <PieChartOutlined />, route: '/sale' },
-        // { title: 'Order', icon: <OrderIcon />, route: '/order' },
+        { title: 'DS Khách Hàng', icon: <UserOutlined />, route: '/khach-hang' },
     ]
     return (
         <div className={styles.sidebar}>
