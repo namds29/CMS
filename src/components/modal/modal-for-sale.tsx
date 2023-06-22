@@ -13,14 +13,13 @@ import { SaleContext } from "../../pages/sale/context/sale-context";
 import utilsService from "../../services/utils-service";
 import { Course, Session } from "../../shared/interfaces/utils-types";
 import { useForm } from "react-hook-form";
-import { parseDate } from "../../shared/utils/parseDate";
+import { parseDate, parseDateTime } from "../../shared/utils/parseDate";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface modalForSaleProps {
   clientInfor: IClient | undefined;
   isModalOpen: boolean;
   setIsModalOpen?: any;
-  showModal: (item: any) => void;
   handleOk: () => void;
   handleCancel: () => void;
 }
@@ -64,10 +63,8 @@ const ModalForSale: FC<modalForSaleProps> = ({
   // handle action
   const handleCheckboxChange = async (fieldName: string, value: any) => {
     if (clientInfor) {
-      
       const checked = value ? 1 : 0;
-      console.log(checked);
-      
+
       const updatedClient = {
         [fieldName]: checked,
       };
@@ -76,8 +73,7 @@ const ModalForSale: FC<modalForSaleProps> = ({
         clientInfor.id,
         updatedClient
       );
-      console.log(res);
-      
+
       res.success && queryClient.invalidateQueries(["clients"]);
     }
   };
@@ -85,7 +81,7 @@ const ModalForSale: FC<modalForSaleProps> = ({
   const handleSelectChange = (event: any) => {
     setSelectedStatus(event.target.value);
     const fieldsToReset = [
-      "feedback",
+      "content",
       "nextCallSchedule",
       "startingDate",
       "note",
@@ -176,7 +172,7 @@ const ModalForSale: FC<modalForSaleProps> = ({
         Modal.success({
           content: "Lưu thành công!",
           onOk() {
-            queryClient.invalidateQueries(['clients']);
+            queryClient.invalidateQueries(["clients"]);
             setIsUpdatedSuccess(false);
           },
         });
@@ -218,7 +214,9 @@ const ModalForSale: FC<modalForSaleProps> = ({
             </p>
             <p>
               Ngày sinh:
-              <span className="ml-2 font-bold">{clientInfor?.dateOfBirth}</span>
+              <span className="ml-2 font-bold">
+                {clientInfor?.dateOfBirth && parseDate(clientInfor.dateOfBirth)}
+              </span>
             </p>
             <p>
               SĐT:<span className="ml-2 font-bold">{clientInfor?.phone}</span>
@@ -226,7 +224,8 @@ const ModalForSale: FC<modalForSaleProps> = ({
             <p>
               Ngày tiếp nhận:
               <span className="ml-2 font-bold">
-                {clientInfor && parseDate(clientInfor?.createdAt)}
+                {clientInfor?.createdAt &&
+                  parseDateTime(clientInfor?.createdAt)}
               </span>
             </p>
           </div>
@@ -277,7 +276,7 @@ const ModalForSale: FC<modalForSaleProps> = ({
                   >
                     <div className="flex justify-between pt-3 ">
                       <p className="font-bold text-base">
-                        {parseDate(item.createdAt)}
+                        {parseDateTime(item.createdAt)}
                       </p>
                       {item.responseStatusName !== "Chốt" && (
                         <div className="px-3 bg-yellow-600 rounded leading-6 text-white">

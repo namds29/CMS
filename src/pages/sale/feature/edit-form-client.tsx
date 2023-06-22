@@ -1,22 +1,24 @@
 import { Modal } from "antd";
 import { FC, useContext } from "react";
 import { useForm } from "react-hook-form";
-import { AuthContext } from "../../../shared/contexts/authContext";
-import { useCreateDataClient } from "../../../shared/hooks/useDataClient";
 import {
   useFetchCenters,
   useFetchReferSources,
 } from "../../../shared/hooks/useFetchUtilsData";
+import { useCreateDataClient } from "../../../shared/hooks/useDataClient";
+import { AuthContext } from "../../../shared/contexts/authContext";
 import { ReferSource } from "../../../shared/interfaces/utils-types";
+import { IClient } from "../../../shared/interfaces/sale-types";
 
-interface FormClientProps {
+type Props = {
+  clientInfor: IClient | undefined;
   isModalOpen: boolean;
   setIsModalOpen: any;
-  showModal: () => void;
   handleCancel: () => void;
-}
+};
 
-const FormClient: FC<FormClientProps> = ({
+const EditFormClient: FC<Props> = ({
+  clientInfor,
   isModalOpen,
   setIsModalOpen,
   handleCancel,
@@ -25,8 +27,20 @@ const FormClient: FC<FormClientProps> = ({
     register,
     handleSubmit,
     // formState: { errors },
-  } = useForm();
-
+  } = useForm({
+    defaultValues: {
+        name: clientInfor?.fullName,
+        phone: clientInfor?.phone,
+        address: clientInfor?.address,
+        dateOfBirth:  "2021-01-01",
+        addZaloFriend: clientInfor?.addZaloFriend,
+        moveToPrivateGroup: clientInfor?.moveToPrivateGroup,
+        referSource: clientInfor?.referSourceID,
+        clientHeathStatus: '',
+        centers: 1,
+        userID: clientInfor?.userID
+    }
+  });
   const { referSources } = useFetchReferSources();
   const { centers } = useFetchCenters();
   const { createClient } = useCreateDataClient();
@@ -66,7 +80,7 @@ const FormClient: FC<FormClientProps> = ({
     <>
       {isModalOpen && (
         <Modal
-          title="FORM TẠO MỚI KHÁCH HÀNG"
+          title="SỬA THÔNG TIN KHÁCH HÀNG"
           open={isModalOpen}
           onOk={handleOk}
           onCancel={handleCancel}
@@ -117,10 +131,12 @@ const FormClient: FC<FormClientProps> = ({
               {
                 <select
                   className="w-[calc(100%-90px)] max-w-full h-8 px-2 text-sm text-gray-900 border-grey rounded bg-gray-50 "
-                  {...register("referSource", {required: true})}
-                  defaultValue={''}
+                  {...register("referSource", { required: true })}
+                  defaultValue={""}
                 >
-                  <option value={''} disabled>Chọn nguồn</option>
+                  <option value={""} disabled>
+                    Chọn nguồn
+                  </option>
                   {referSources.map((item: ReferSource, index: number) => (
                     <option key={index + item.name} value={item.id}>
                       {item.name}
@@ -166,7 +182,7 @@ const FormClient: FC<FormClientProps> = ({
                 type="submit"
                 className="bg-blue-500 text-white px-4 py-1 rounded-md border-none cursor-pointer hover:bg-blue-400 "
               >
-                Tạo
+                Cập nhật
               </button>
             </div>
           </form>
@@ -176,4 +192,4 @@ const FormClient: FC<FormClientProps> = ({
   );
 };
 
-export default FormClient;
+export default EditFormClient;

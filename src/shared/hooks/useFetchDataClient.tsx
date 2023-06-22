@@ -3,7 +3,7 @@ import { IClient } from "../interfaces/sale-types";
 import { useState, useEffect, useContext } from "react";
 import saleService from "../../services/sale-service";
 import { SaleContext } from "../../pages/sale/context/sale-context";
-import { parseDate } from "../utils/parseDate";
+import { parseDateTime } from "../utils/parseDate";
 
 const useFetchDataClient = () => {
   const [data, setData] = useState<IClient[]>();
@@ -18,9 +18,9 @@ const useFetchDataClient = () => {
     console.log("resClient.data", resClient.data);
 
     const mapData = resClient.map((client: IClient) => {
-      const createdAt = parseDate(client.createdAt);
-      const dob = parseDate(client.dateOfBirth!);
-      const lastCareTime = parseDate(client.lastCareTime!);
+      const createdAt = parseDateTime(client.createdAt);
+      const dob = parseDateTime(client.dateOfBirth!);
+      const lastCareTime = parseDateTime(client.lastCareTime!);
       return {
         ...client,
         createdAt: createdAt,

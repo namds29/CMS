@@ -1,9 +1,10 @@
 import { FC, useState } from "react";
-
 import ModalForSale from "../../../components/modal/modal-for-sale";
 import { IClient } from "../../../shared/interfaces/sale-types";
 import { useFetchDataQueryClient } from "../../../shared/hooks/useDataClient";
-import { parseDate } from "../../../shared/utils/parseDate";
+import { parseDate, parseDateTime } from "../../../shared/utils/parseDate";
+import { Tag } from "antd";
+import EditFormClient from "./edit-form-client";
 
 interface DataTableProps {}
 const columnNames = [
@@ -19,10 +20,11 @@ const columnNames = [
   "Đưa vào nhóm kín",
   "Cơ sở chuyển",
 ];
-const FetchDataTable: FC<DataTableProps> = ({}) => {
+const FetchDataTable: FC<DataTableProps> = () => {
   const { data = [] } = useFetchDataQueryClient();
   const [clientInfor, setClientInfor] = useState<IClient>();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalTakeCareOpen, setIsModalTakeCareOpen] = useState(false);
+  const [isModalEditClientOpen, setIsModalEditClientOpen] = useState(false);
   // console.log(data);
 
   const transformData = data.sort((a: IClient, b: IClient) => {
@@ -31,24 +33,26 @@ const FetchDataTable: FC<DataTableProps> = ({}) => {
 
     return dateB.getTime() - dateA.getTime();
   });
-  // console.log('trán',transformData);
 
   const showModalTakeCare = (client: IClient) => {
     console.log(client);
     setClientInfor(client);
-    setIsModalOpen(true);
+    setIsModalTakeCareOpen(true);
   };
 
-  const showModal = () => {
-    setIsModalOpen(true);
+  const showModalEditClient = (client: IClient) => {
+    console.log(client);
+    setClientInfor(client);
+    setIsModalEditClientOpen(true);
   };
 
   const handleOk = () => {
-    setIsModalOpen(false);
+    setIsModalTakeCareOpen(false);
   };
 
   const handleCancel = () => {
-    setIsModalOpen(false);
+    setIsModalTakeCareOpen(false);
+    setIsModalEditClientOpen(false);
   };
 
   return (
@@ -94,10 +98,17 @@ const FetchDataTable: FC<DataTableProps> = ({}) => {
                     {item.referSourceName}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {item.responseStatusName}
+                    <Tag
+                      style={{ fontSize: "1rem" }}
+                      color={
+                        item.responseStatusName === "Chốt" ? "green" : "blue"
+                      }
+                    >
+                      {item.responseStatusName}
+                    </Tag>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {parseDate(item.createdAt)}
+                    {parseDateTime(item.createdAt)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {item.fullName}
@@ -105,10 +116,10 @@ const FetchDataTable: FC<DataTableProps> = ({}) => {
                   <td className="px-6 py-4 whitespace-nowrap">{item.phone}</td>
                   <td className="px-6 py-4">{item.address}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {item.dateOfBirth}
+                    {item.dateOfBirth && parseDate(item.dateOfBirth)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {item.lastCareTime ? parseDate(item.lastCareTime) : ""}
+                    {item.lastCareTime ? parseDateTime(item.lastCareTime) : ""}
                   </td>
                   <td className="px-6 py-4">
                     <input
@@ -133,6 +144,12 @@ const FetchDataTable: FC<DataTableProps> = ({}) => {
                     <div className="flex">
                       <div className="text-center w-full font-bold">
                         <button
+                          className="border-none bg-transparent text-blue-600 hover:underline cursor-pointer border-r-solid"
+                          onClick={() => showModalEditClient(item)}
+                        >
+                          Chỉnh sửa
+                        </button>
+                        <button
                           className="border-none bg-transparent text-blue-600 hover:underline cursor-pointer"
                           onClick={() => showModalTakeCare(item)}
                         >
@@ -145,10 +162,18 @@ const FetchDataTable: FC<DataTableProps> = ({}) => {
               ))}
           </tbody>
         </table>
-        {isModalOpen && (
+        {isModalEditClientOpen && (
+          <EditFormClient
+            clientInfor={clientInfor}
+            isModalOpen={isModalEditClientOpen}
+            setIsModalOpen={setIsModalEditClientOpen}
+            handleCancel={handleCancel}
+          />
+        )}
+
+        {isModalTakeCareOpen && (
           <ModalForSale
-            isModalOpen={isModalOpen}
-            showModal={showModal}
+            isModalOpen={isModalTakeCareOpen}
             handleOk={handleOk}
             handleCancel={handleCancel}
             clientInfor={clientInfor}

@@ -1,12 +1,13 @@
 import { FC, useState } from "react";
 import FetchDataTable from "./feature/fetch-data-table";
-import CreateFormClient from "./feature/create-form-client";
+// import CreateFormClient from "./feature/create-form-client";
 import { Button } from "antd";
 import { SaleProvider } from "./context/sale-context";
+import FormClient from "./feature/create-form-client";
 
 interface indexProps {}
 
-const SalePage: FC<indexProps> = ({}) => {
+const SalePage: FC<indexProps> = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCancel = () => {
@@ -24,7 +25,7 @@ const SalePage: FC<indexProps> = ({}) => {
         </Button>
       </div>
       {isModalOpen && (
-        <CreateFormClient
+        <FormClient
           isModalOpen={isModalOpen}
           setIsModalOpen={setIsModalOpen}
           showModal={showModal}
