@@ -7,7 +7,7 @@ const Sidebar = ({ menuOpen }: any) => {
     const menuItem = [
         { title: 'Dashboard', icon: <FundOutlined />, route: '/dashboard' },
         { title: 'Sale', icon: <PieChartOutlined />, route: '/sale' },
-        { title: 'DS Khách Hàng', icon: <UserOutlined />, route: '/khach-hang' },
+        { title: 'DS Học viên', icon: <UserOutlined />, route: '/ds-hoc-vien' },
     ]
     return (
         <div className={styles.sidebar}>

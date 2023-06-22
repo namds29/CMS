@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import ModalForSale from "../../../components/modal/modal-for-sale";
+import ModalTakeCare from "../../../components/modal/modal-takecare";
 import { IClient } from "../../../shared/interfaces/sale-types";
 import { useFetchDataQueryClient } from "../../../shared/hooks/useDataClient";
 import { parseDate, parseDateTime } from "../../../shared/utils/parseDate";
@@ -11,6 +11,7 @@ const columnNames = [
   "Nguồn",
   "Tình trạng",
   "Ngày tiếp nhận",
+  "Ngày gọi lại",
   "Họ và tên",
   "SĐT",
   "Địa chỉ",
@@ -25,7 +26,6 @@ const FetchDataTable: FC<DataTableProps> = () => {
   const [clientInfor, setClientInfor] = useState<IClient>();
   const [isModalTakeCareOpen, setIsModalTakeCareOpen] = useState(false);
   const [isModalEditClientOpen, setIsModalEditClientOpen] = useState(false);
-  // console.log(data);
 
   const transformData = data.sort((a: IClient, b: IClient) => {
     const dateA = new Date(a.createdAt);
@@ -57,7 +57,7 @@ const FetchDataTable: FC<DataTableProps> = () => {
 
   return (
     <>
-      <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full h-[calc(100vh-15rem)]">
+      <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full max-h-[calc(100vh-15rem)]">
         <table className="w-full text-sm text-left text-gray-500  border-collapse">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
@@ -98,17 +98,22 @@ const FetchDataTable: FC<DataTableProps> = () => {
                     {item.referSourceName}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <Tag
-                      style={{ fontSize: "1rem" }}
-                      color={
-                        item.responseStatusName === "Chốt" ? "green" : "blue"
-                      }
-                    >
-                      {item.responseStatusName}
-                    </Tag>
+                    {item.responseStatusName && (
+                      <Tag
+                        style={{ fontSize: "0.9rem" }}
+                        color={
+                          item.responseStatusName === "Chốt" ? "green" : "blue"
+                        }
+                      >
+                        {item.responseStatusName}
+                      </Tag>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {parseDateTime(item.createdAt)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {item.nextCallDate && parseDate(item.nextCallDate)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {item.fullName}
@@ -172,7 +177,7 @@ const FetchDataTable: FC<DataTableProps> = () => {
         )}
 
         {isModalTakeCareOpen && (
-          <ModalForSale
+          <ModalTakeCare
             isModalOpen={isModalTakeCareOpen}
             handleOk={handleOk}
             handleCancel={handleCancel}

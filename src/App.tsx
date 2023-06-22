@@ -5,6 +5,8 @@ import Layout from "./components/layout/Layout";
 import SalePage from "./pages/sale";
 import { AuthProvider } from "./shared/contexts/authContext";
 import { UtilsProvider } from "./shared/contexts/utilsContext";
+import Dashboard from "./pages/dashboard";
+import StudentPage from "./pages/students";
 
 function App() {
   return (
@@ -14,9 +16,9 @@ function App() {
           <Routes>
             <Route path="/" element={<LoginForm />} />
             <Route element={<Layout children={<Outlet />} />}>
-              {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/sale" element={<SalePage />} />
-              {/* <Route path="/khach-hang" element={<SalePage />} /> */}
+              <Route path="/ds-hoc-vien" element={<StudentPage />} />
             </Route>
           </Routes>
         </UtilsProvider>

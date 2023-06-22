@@ -16,7 +16,15 @@ export const parseDateTime = (params: string) => {
 
 export const parseDate = (params: string) => {
   const date = new Date(params);
-
+  
   const formattedDate = date.toLocaleDateString("en-US");
+  //convert mm/dd//yyyy
   return formattedDate;
 };
+
+export const parseDateTypeInput = (params: string) => {
+  const date = new Date(params);
+  date.setDate(date.getDate() + 1); // Add one day to account for the time zone offset
+  const formattedDate = date.toISOString().slice(0, 10);
+  return formattedDate;
+}

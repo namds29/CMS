@@ -16,7 +16,7 @@ import { useForm } from "react-hook-form";
 import { parseDate, parseDateTime } from "../../shared/utils/parseDate";
 import { useQueryClient } from "@tanstack/react-query";
 
-interface modalForSaleProps {
+interface ModalTakeCareProps {
   clientInfor: IClient | undefined;
   isModalOpen: boolean;
   setIsModalOpen?: any;
@@ -24,7 +24,7 @@ interface modalForSaleProps {
   handleCancel: () => void;
 }
 
-const ModalForSale: FC<modalForSaleProps> = ({
+const ModalTakeCare: FC<ModalTakeCareProps> = ({
   clientInfor,
   isModalOpen,
   handleOk,
@@ -34,11 +34,12 @@ const ModalForSale: FC<modalForSaleProps> = ({
     register,
     handleSubmit,
     setValue,
+    reset
     // formState: { errors },
   } = useForm({
     defaultValues: {
       content: "",
-      responseStatusID: "",
+      responseStatusID: 0,
       nextCallSchedule: "",
       startingDate: "",
       note: "",
@@ -74,7 +75,11 @@ const ModalForSale: FC<modalForSaleProps> = ({
         updatedClient
       );
 
-      res.success && queryClient.invalidateQueries(["clients"]);
+      if (res.success) {
+        queryClient.invalidateQueries({ queryKey: ["clients"] });
+        queryClient.invalidateQueries({ queryKey: ["saleTodos"] });
+        queryClient.invalidateQueries({ queryKey: ["students"] });
+      }
     }
   };
 
@@ -102,7 +107,6 @@ const ModalForSale: FC<modalForSaleProps> = ({
     try {
       const res = await saleService.fetchClientResponseStatus();
       setClientResponseStatus(res);
-      console.log("res status");
     } catch (error) {
       console.log(error);
     }
@@ -130,7 +134,14 @@ const ModalForSale: FC<modalForSaleProps> = ({
       if (clientInfor) {
         const res = await saleService.fetchClientCareHistories(clientInfor.id);
         console.log("histories", res);
-        setClientCareHistories(res);
+        const sortDesc = res.sort((a: IClient, b: IClient) => {
+          const dateA = new Date(a.createdAt);
+          const dateB = new Date(b.createdAt);
+
+          return dateB.getTime() - dateA.getTime();
+        });
+
+        setClientCareHistories(sortDesc);
       }
     } catch (error) {
       console.log(error);
@@ -173,7 +184,9 @@ const ModalForSale: FC<modalForSaleProps> = ({
           content: "Lưu thành công!",
           onOk() {
             queryClient.invalidateQueries(["clients"]);
+            reset()
             setIsUpdatedSuccess(false);
+            
           },
         });
       } else {
@@ -336,7 +349,7 @@ const ModalForSale: FC<modalForSaleProps> = ({
                   onChange: (e) => handleSelectChange(e),
                 })}
               >
-                <option value="" disabled>
+                <option value={0}>
                   Chọn
                 </option>
                 {clientResponseStatus &&
@@ -348,7 +361,7 @@ const ModalForSale: FC<modalForSaleProps> = ({
               </select>
             </div>
           </div>
-          {["1", "2", "4", "3", "5"].includes(selectedStatus) && (
+          {["1", "2", "4", "3", "5", "8"].includes(selectedStatus) && (
             <>
               <div className=" mt-2 items-center">
                 <p className="text-base font-bold">
@@ -365,13 +378,13 @@ const ModalForSale: FC<modalForSaleProps> = ({
               </div>
             </>
           )}
-          {selectedStatus === "3" && (
+          {["3", "8"].includes(selectedStatus) && (
             <>
-              <div className="flex mt-2 items-center">
+              <div className=" mt-2 items-center">
                 <p className="text-base font-bold">
                   Chọn ngày đến<span className="text-red-600">*</span> :
                 </p>
-                <div className="flex ml-8">
+                <div className="flex mt-2">
                   <input
                     type="date"
                     className="w-52 h-8 px-2  text-gray-900 border-grey rounded bg-gray-50"
@@ -381,6 +394,30 @@ const ModalForSale: FC<modalForSaleProps> = ({
                 </div>
               </div>
             </>
+          )}
+          {["8"].includes(selectedStatus) && (
+            <div className="flex mt-2 items-center">
+              <p className="text-base font-bold">
+                Chọn ca<span className="text-red-600">*</span> :
+              </p>
+              <div className="flex ml-8">
+                <select
+                  className="w-52 max-w-full h-8 px-2 text-sm text-gray-900 border-grey rounded bg-gray-50 "
+                  defaultValue=""
+                  {...register("sessionId")}
+                >
+                  <option value="" disabled>
+                    Chọn ca
+                  </option>
+                  {sessions &&
+                    sessions.map((item) => (
+                      <option key={item.id + item.name} value={item.id}>
+                        {item.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            </div>
           )}
           {selectedStatus === "6" && (
             <>
@@ -507,4 +544,4 @@ const ModalForSale: FC<modalForSaleProps> = ({
   );
 };
 
-export default ModalForSale;
+export default ModalTakeCare;

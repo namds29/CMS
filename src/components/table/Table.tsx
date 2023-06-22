@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { IClient } from "../../shared/interfaces/sale-types";
 // import useFetchDataQueryClient from "../../shared/hooks/useFetchDataQueryClient";
-import ModalForSale from "../modal/modal-for-sale";
+import ModalTakeCare from "../modal/modal-takecare";
 import { useFetchDataQueryClient } from "../../shared/hooks/useDataClient";
 
 const columnNames = [
@@ -26,10 +26,6 @@ const TableComponent = () => {
   const showModalTakeCare = (client: IClient) => {
     console.log(client);
     setClientInfor(client);
-    setIsModalOpen(true);
-  };
-
-  const showModal = () => {
     setIsModalOpen(true);
   };
 
@@ -133,9 +129,8 @@ const TableComponent = () => {
           </tbody>
         </table>
         {isModalOpen && (
-          <ModalForSale
+          <ModalTakeCare
             isModalOpen={isModalOpen}
-            showModal={showModal}
             handleOk={handleOk}
             handleCancel={handleCancel}
             clientInfor={clientInfor}

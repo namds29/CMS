@@ -6,7 +6,7 @@ interface Props {
   children: ReactNode;
 }
 const Layout: React.FC<Props> = ({ children }) => {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(true);
 
   const handleMenuToggle = () => {
     setMenuOpen(!menuOpen);

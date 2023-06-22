@@ -2,11 +2,10 @@ import { IDetailFormClient } from "../interfaces/sale-types";
 import saleService from "../../services/sale-service";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-
 export const useFetchDataQueryClient = () => {
   const { isLoading, error, data } = useQuery({
     queryKey: ["clients"],
-    queryFn: async () => saleService.fetchClient(1, 12),
+    queryFn: saleService.fetchClient,
   });
   return { data, isLoading, error };
 };

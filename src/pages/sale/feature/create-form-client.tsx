@@ -120,7 +120,7 @@ const FormClient: FC<FormClientProps> = ({
                   {...register("referSource", {required: true})}
                   defaultValue={''}
                 >
-                  <option value={''} disabled>Chọn nguồn</option>
+                  <option value={''}>Chọn nguồn</option>
                   {referSources.map((item: ReferSource, index: number) => (
                     <option key={index + item.name} value={item.id}>
                       {item.name}
@@ -130,13 +130,13 @@ const FormClient: FC<FormClientProps> = ({
               }
             </div>
             <div className="flex justify-between items-center mt-6">
-              <p className="font-bold ">Cơ sở:</p>
+              <p className="font-bold ">Cơ sở tiếp nhận:</p>
               <select
                 className="w-[calc(100%-90px)] max-w-full h-8 px-2 text-sm text-gray-900 border-grey rounded bg-gray-50 "
                 {...register("centers")}
                 defaultValue={""}
               >
-                <option value="" disabled>
+                <option value="">
                   Chọn cơ sở
                 </option>
                 {centers.map((item: ReferSource, index: number) => (

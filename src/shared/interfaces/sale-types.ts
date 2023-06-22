@@ -8,16 +8,18 @@ export interface IClient {
     dateOfBirth?: string;
     status: string;
     intakeCenterName?: number;
+    intakeCenterID?: number;
     lastCareTime?: string;
     userID?: number;
     addZaloFriend: number;
     moveToPrivateGroup: boolean;
-    referSourceID: number;
+    referSourceId: number;
     referSourceName: string;
     vistingDate: string;
     courseID: string;
     startingDate: string;
     responseStatusName: string
+    nextCallDate: string,
 }
 
 export interface ICare {
@@ -52,6 +54,7 @@ export interface IDetailFormClient {
     intakeCenterID: number,
     userID: number
 }
+
 export interface IUpdateFormClient {
     name?: string,
     phone?: number,
